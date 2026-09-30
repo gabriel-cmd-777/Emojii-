@@ -57,8 +57,10 @@ footer{padding:26px 0;color:#888;text-align:center;font-size:12px}
 <section id="et" class="view">
 <button class="back" onclick="show('home')">← Menu</button>
 <h2>🔤 Emoji → Testo</h2>
-<p class="small">Una riga è una scena. Tocca le emoji per comporre oppure incolla una sequenza.</p>
+<p class="small">Una riga è una scena. Vanno bene tutte le emoji del telefono: scrivile con la tastiera emoji oppure cerca per nome o tocca quelle qui sotto.</p>
 <textarea id="eIn" class="em" placeholder="👨🏻➡️🚉🔎👩🏻"></textarea>
+<input id="pSrch" oninput="ps()" placeholder="Cerca un'emoji per nome (es. pinguino)" style="width:100%;border:1px solid #ccc;border-radius:12px;padding:12px;font:inherit;margin-top:10px">
+<div id="pRes" class="chips"></div>
 <div id="pal" class="chips"></div>
 <select id="eMode"><option value="narrative">Narrativa</option><option value="literal">Letterale</option><option value="literary">Letteraria (varia a ogni lettura)</option></select>
 <div class="act"><button onclick="et()">Ricostruisci</button><button class="secondary" onclick="cp('eOut',this)">Copia</button></div>
@@ -93,6 +95,7 @@ footer{padding:26px 0;color:#888;text-align:center;font-size:12px}
 <button class="back" onclick="show('home')">← Menu</button>
 <h2>📖 Grammatica</h2>
 <div class="card small" style="margin-bottom:12px">Una riga è una scena. Nella riga l'ordine conta: soggetto, azione, oggetto, luogo. ❌ nega l'azione che segue oppure l'elemento se manca l'azione. ➡️ e ↩️ sono movimento verso un luogo e ritorno. Un nuovo soggetto dopo un'azione apre una nuova frase. Senza soggetto continua il precedente. Atmosfera e svolte occupano una frase propria.</div>
+<div id="gNote" class="card small" style="margin-bottom:12px"></div>
 <div id="lex"></div>
 </section>
 
@@ -176,10 +179,1946 @@ const A=RAW.split('\n').map(l=>{const f=l.split('|'),t=f[0],e={t,e:f[1]};
  else if(t==='V'){e.k=f[2];e.fm=f[3].split(',');e.nul=f[4];e.st=f[5]}
  else{e.ph=f[2].split('/');e.st=f[3]}
  e.st=(e.st||'').split(',').filter(Boolean);e.n=norm(e.e);return e});
-const byN=new Map(A.map(e=>[e.n,e])),K=[...byN.keys()].sort((a,b)=>b.length-a.length);
+const byN=new Map(A.map(e=>[e.n,e]));
 const mt=l=>A.find(e=>e.st.some(s=>s.endsWith('$')?l===s.slice(0,-1):l.startsWith(s)));
 const by=t=>A.filter(e=>e.t===t&&e.st.length);
-const lb=e=>e.t==='V'?e.fm[0]:e.t==='M'||e.t==='S'||e.t==='N'?e.ph[0]:e.def;
+const lb=e=>e.lab||(e.t==='V'?e.fm[0]:e.t==='M'||e.t==='S'||e.t==='N'?e.ph[0]:e.def);
+
+const DATA=`V|😀|faccina con un gran sorriso
+V|😃|faccina con sorriso e occhi spalancati
+V|😄|faccina con sorriso e occhi sorridenti
+V|😁|faccina raggiante con occhi felici
+V|😆|sorriso a bocca aperta con occhi chiusi
+V|😅|faccina con sorriso e goccia di sudore
+V|🤣|ridere a crepapelle
+V|😂|faccina con lacrime di gioia
+V|🙂|faccina con sorriso accennato
+V|🙃|faccina sottosopra
+V|🫠|faccina che si scioglie
+V|😉|faccina che fa l’occhiolino
+V|😊|faccina con occhi sorridenti
+V|😇|faccina con sorriso e aureola
+V|🥰|faccina con cuoricini
+V|😍|faccina con sorriso e occhi a cuore
+V|🤩|colpo di fulmine
+V|😘|faccina che manda un bacio
+V|😗|faccina che bacia
+V|☺️|faccina sorridente
+V|😚|faccina che bacia con occhi chiusi
+V|😙|faccina che bacia con occhi sorridenti
+V|🥲|faccina sorridente con lacrima
+V|😋|faccina che si lecca i baffi
+V|😛|faccina che mostra la lingua
+V|😜|faccina che fa l’occhiolino e mostra la lingua
+V|🤪|faccina impazzita
+V|😝|faccina che strizza gli occhi e mostra la lingua
+V|🤑|faccina avida di denaro
+V|🤗|faccina che abbraccia
+V|🤭|faccina con mano sulla bocca
+V|🫢|faccina con occhi aperti e mano sulla bocca
+V|🫣|faccina che sbircia tra le dita
+V|🤫|faccina che zittisce
+V|🤔|faccina concentrata
+V|🫡|faccina che fa il saluto
+V|🤐|faccina con bocca con cerniera
+V|🤨|faccina con sopracciglia alzate
+V|😐️|faccina neutra
+V|😑|faccina inespressiva
+V|😶|faccina senza bocca
+V|🫥|faccina tratteggiata
+V|😶‍🌫️|testa tra le nuvole
+V|😏|faccina con sorrisetto
+V|😒|faccina contrariata
+V|🙄|faccina con occhi al cielo
+V|😬|faccina con smorfia
+V|😮‍💨|faccina che espira
+V|🤥|faccina bugiarda
+V|🫨|faccina tremante
+V|🙂‍↔️|scuotere la testa in senso orizzontale
+V|🙂‍↕️|scuotere la testa in senso verticale
+V|😌|faccina sollevata
+V|😔|faccina pensierosa
+V|😪|faccina assonnata
+V|🤤|faccina che sbava
+V|😴|faccina che dorme
+V|🫩|faccina con borse sotto gli occhi
+V|😷|faccina con mascherina
+V|🤒|faccina con termometro
+V|🤕|faccina con la testa bendata
+V|🤢|faccina nauseata
+V|🤮|faccina che vomita
+V|🤧|faccina che starnutisce
+V|🥵|faccina accaldata
+V|🥶|faccina congelata
+V|🥴|faccina stordita
+V|😵|faccina frastornata
+V|😵‍💫|faccina con occhi a spirale
+V|🤯|testa che esplode
+V|🤠|faccina con cappello da cowboy
+V|🥳|faccina che festeggia
+V|🥸|faccina travestita
+V|😎|faccina con sorriso e occhiali da sole
+V|🤓|faccina nerd
+V|🧐|faccina con monocolo
+V|😕|faccina confusa
+V|🫤|faccina perplessa
+V|😟|faccina preoccupata
+V|🙁|faccina leggermente imbronciata
+V|☹️|faccina imbronciata
+V|😮|faccina con bocca aperta
+V|😯|faccina sorpresa
+V|😲|faccina stupita
+V|😳|faccina imbarazzata
+V|🫪|faccina stravolta
+V|🥺|faccina supplichevole
+V|🥹|faccina che trattiene le lacrime
+V|😦|faccina imbronciata con bocca aperta
+V|😧|faccina angosciata
+V|😨|faccina impaurita
+V|😰|faccina sudata in ansia
+V|😥|faccina delusa ma sollevata
+V|😢|faccina che piange
+V|😭|faccina disperata
+V|😱|faccina terrorizzata
+V|😖|faccina frustrata
+V|😣|faccina perseverante
+V|😞|faccina delusa
+V|😓|faccina abbattuta sudata
+V|😩|faccina esausta
+V|😫|faccina stanca
+V|🥱|faccina che sbadiglia
+V|😤|faccina che sbuffa
+V|😡|faccina accigliata
+V|😠|faccina arrabbiata
+V|🤬|faccina con simboli sulla bocca
+V|😈|faccina con sorriso e corna
+V|👿|faccina arrabbiata con corna
+V|💀|teschio
+V|☠️|teschio con ossa incrociate
+V|💩|cacca
+V|🤡|faccina pagliaccio
+V|👹|orco
+V|👺|goblin
+V|👻|fantasma
+V|👽️|alieno
+V|👾|mostro alieno
+V|🤖|faccina di robot
+V|😺|gatto che sorride
+V|😸|gatto che sogghigna
+V|😹|gatto con lacrime di gioia
+V|😻|gatto innamorato
+V|😼|gatto con sorriso sarcastico
+V|😽|gatto che manda baci
+V|🙀|gatto esterrefatto
+V|😿|gatto che piange
+V|😾|gatto imbronciato
+V|🙈|non vedo
+V|🙉|non sento
+V|🙊|non parlo
+O|💌|lettera d’amore
+O|💘|cuore con freccia
+O|💝|cuore con fiocco
+O|💖|cuore che luccica
+O|💗|cuore che cresce
+O|💓|cuore che batte
+O|💞|cuori che girano
+O|💕|due cuori
+O|💟|decorazione con cuore
+O|❣️|punto esclamativo a cuore
+O|💔|cuore infranto
+O|❤️‍🔥|cuore in fiamme
+O|❤️‍🩹|cuore guarito
+O|❤️|cuore rosso
+O|🩷|cuore rosa
+O|🧡|cuore arancione
+O|💛|cuore giallo
+O|💚|cuore verde
+O|💙|cuore blu
+O|🩵|cuore azzurro
+O|💜|cuore viola
+O|🤎|cuore marrone
+O|🖤|cuore nero
+O|🩶|cuore grigio
+O|🤍|cuore bianco
+O|💋|impronta della bocca
+O|💯|100 punti
+O|💢|rabbia
+O|🫯|nuvoletta di zuffa
+O|💥|collisione
+O|💫|stella con scia
+O|💦|gocce di sudore
+O|💨|nuvola di polvere
+O|🕳️|buco
+O|💬|fumetto
+O|👁️‍🗨️|occhio nel fumetto
+O|🗨️|fumetto a sinistra
+O|🗯️|nuvoletta rabbia
+O|💭|nuvoletta
+O|💤|sonno
+O|👋|mano che saluta
+O|🤚|dorso mano alzata
+O|🖐️|mano aperta
+O|✋️|mano alzata
+O|🖖|saluto vulcaniano
+O|🫱|mano rivolta a destra
+O|🫲|mano rivolta a sinistra
+O|🫳|mano con il palmo verso il basso
+O|🫴|mano con il palmo verso l’alto
+O|🫷|mano che spinge a sinistra
+O|🫸|mano che spinge a destra
+O|👌|mano che fa OK
+O|🤌|mano a pigna
+O|🤏|mano che fa il gesto del pizzico
+O|✌️|vittoria
+O|🤞|dita incrociate
+O|🫰|mano con indice e pollice incrociati
+O|🤟|gesto ti amo
+O|🤘|segno delle corna
+O|🤙|mano con gesto di chiamata
+O|👈️|indice verso sinistra
+O|👉️|indice verso destra
+O|👆️|indice alzato
+O|🖕|dito medio
+O|👇️|indice abbassato
+O|☝️|indice verso l’alto
+O|🫵|indice verso l’osservatore
+O|👍️|pollice in su
+O|👎️|pollice verso
+O|✊️|pugno
+O|👊|pugno chiuso
+O|🤛|pugno a sinistra
+O|🤜|pugno a destra
+O|👏|mani che applaudono
+O|🙌|mani alzate
+O|🫶|mani a cuore
+O|👐|mani aperte
+O|🤲|mani unite in alto
+O|🤝|stretta di mano
+O|🙏|mani giunte
+O|✍️|mano che scrive
+O|💅|smalto per unghie
+O|🤳|selfie
+O|💪|bicipite
+O|🦾|protesi robotica per il braccio
+O|🦿|protesi robotica per la gamba
+O|🦵|gamba
+O|🦶|piede
+O|👂️|orecchio
+O|🦻|orecchio con apparecchio acustico
+O|👃|naso
+O|🧠|cervello
+O|🫀|organo del cuore
+O|🫁|polmoni
+O|🦷|dente
+O|🦴|osso
+O|👀|occhi
+O|👁️|occhio
+O|👅|lingua
+O|👄|bocca
+O|🫦|bocca che morde il labbro
+P|👶|neonato
+P|🧒|bimbo
+P|👦|bambino
+P|👧|bambina
+P|🧑|persona
+P|👱|persona bionda
+P|👨|uomo
+P|🧔|persona con la barba
+P|🧔‍♂️|uomo con la barba
+P|🧔‍♀️|donna con la barba
+P|👨‍🦰|uomo: capelli rossi
+P|👨‍🦱|uomo: capelli ricci
+P|👨‍🦳|uomo: capelli bianchi
+P|👨‍🦲|uomo: calvo
+P|👩|donna
+P|👩‍🦰|donna: capelli rossi
+P|🧑‍🦰|persona: capelli rossi
+P|👩‍🦱|donna: capelli ricci
+P|🧑‍🦱|persona: capelli ricci
+P|👩‍🦳|donna: capelli bianchi
+P|🧑‍🦳|persona: capelli bianchi
+P|👩‍🦲|donna: calvo
+P|🧑‍🦲|persona: calvo
+P|👱‍♀️|donna bionda
+P|👱‍♂️|uomo biondo
+P|🧓|persona anziana
+P|👴|uomo anziano
+P|👵|donna anziana
+P|🙍|persona corrucciata
+P|🙍‍♂️|uomo corrucciato
+P|🙍‍♀️|donna corrucciata
+P|🙎|persona imbronciata
+P|🙎‍♂️|uomo imbronciato
+P|🙎‍♀️|donna imbronciata
+P|🙅|persona che fa segno di no
+P|🙅‍♂️|uomo con gesto di rifiuto
+P|🙅‍♀️|donna con gesto di rifiuto
+P|🙆|persona con gesto OK
+P|🙆‍♂️|uomo con gesto OK
+P|🙆‍♀️|donna con gesto OK
+P|💁|persona con mano capovolta
+P|💁‍♂️|uomo con mano capovolta
+P|💁‍♀️|donna con mano capovolta
+P|🙋|persona con mano alzata
+P|🙋‍♂️|uomo con mano alzata
+P|🙋‍♀️|donna con mano alzata
+P|🧏|persona con problemi di udito
+P|🧏‍♂️|uomo con problemi di udito
+P|🧏‍♀️|donna con problemi di udito
+P|🙇|persona che fa un inchino profondo
+P|🙇‍♂️|uomo che fa inchino profondo
+P|🙇‍♀️|donna che fa inchino profondo
+P|🤦|persona esasperata
+P|🤦‍♂️|uomo esasperato
+P|🤦‍♀️|donna esasperata
+P|🤷|persona che scrolla le spalle
+P|🤷‍♂️|uomo che scrolla le spalle
+P|🤷‍♀️|donna che scrolla le spalle
+P|🧑‍⚕️|persona che lavora nella sanità
+P|👨‍⚕️|operatore sanitario
+P|👩‍⚕️|operatrice sanitaria
+P|🧑‍🎓|studente
+P|👨‍🎓|studente maschio
+P|👩‍🎓|studentessa
+P|🧑‍🏫|insegnante
+P|👨‍🏫|professore
+P|👩‍🏫|professoressa
+P|🧑‍⚖️|giudice
+P|👨‍⚖️|giudice uomo
+P|👩‍⚖️|giudice donna
+P|🧑‍🌾|agricoltore
+P|👨‍🌾|contadino
+P|👩‍🌾|contadina
+P|🧑‍🍳|persona che cucina
+P|👨‍🍳|cuoco
+P|👩‍🍳|cuoca
+P|🧑‍🔧|meccanico
+P|👨‍🔧|meccanico uomo
+P|👩‍🔧|meccanico donna
+P|🧑‍🏭|persona che lavora in fabbrica
+P|👨‍🏭|operaio
+P|👩‍🏭|operaia
+P|🧑‍💼|persona che fa un lavoro d’ufficio
+P|👨‍💼|impiegato
+P|👩‍💼|impiegata
+P|🧑‍🔬|persona che lavora in campo scientifico
+P|👨‍🔬|scienziato
+P|👩‍🔬|scienziata
+P|🧑‍💻|persona esperta di tecnologia
+P|👨‍💻|tecnologo
+P|👩‍💻|tecnologa
+P|🧑‍🎤|cantante
+P|👨‍🎤|cantante uomo
+P|👩‍🎤|cantante donna
+P|🧑‍🎨|artista
+P|👨‍🎨|artista uomo
+P|👩‍🎨|artista donna
+P|🧑‍✈️|pilota
+P|👨‍✈️|pilota uomo
+P|👩‍✈️|pilota donna
+P|🧑‍🚀|astronauta
+P|👨‍🚀|astronauta uomo
+P|👩‍🚀|astronauta donna
+P|🧑‍🚒|pompiere
+P|👨‍🚒|pompiere uomo
+P|👩‍🚒|pompiere donna
+P|👮|agente di polizia
+P|👮‍♂️|poliziotto
+P|👮‍♀️|poliziotta
+P|🕵️|detective
+P|🕵️‍♂️|investigatore
+P|🕵️‍♀️|investigatrice
+P|💂|guardia
+P|💂‍♂️|guardia uomo
+P|💂‍♀️|guardia donna
+P|🥷|ninja
+P|👷|operaio edile
+P|👷‍♂️|operaio edile uomo
+P|👷‍♀️|operaia edile
+P|🫅|persona con corona
+P|🤴|principe
+P|👸|principessa
+P|👳|persona con turbante
+P|👳‍♂️|uomo con turbante
+P|👳‍♀️|donna con turbante
+P|👲|uomo con zucchetto cinese
+P|🧕|donna con velo
+P|🤵|persona in smoking
+P|🤵‍♂️|uomo in smoking
+P|🤵‍♀️|donna in smoking
+P|👰|persona con velo
+P|👰‍♂️|sposo con velo
+P|👰‍♀️|sposa con velo
+P|🤰|donna incinta
+P|🫃|uomo incinto
+P|🫄|persona incinta
+P|🤱|allattare
+P|👩‍🍼|donna che allatta
+P|👨‍🍼|uomo che allatta
+P|🧑‍🍼|persona che allatta
+P|👼|angioletto
+P|🎅|Babbo Natale
+P|🤶|Mamma Natale
+P|🧑‍🎄|Santa Claus
+P|🦸|supereroe
+P|🦸‍♂️|supereroe uomo
+P|🦸‍♀️|supereroina
+P|🦹|supercattivo
+P|🦹‍♂️|supercattivo uomo
+P|🦹‍♀️|supercattiva
+P|🧙|mago
+P|🧙‍♂️|mago uomo
+P|🧙‍♀️|maga
+P|🧚|fata
+P|🧚‍♂️|folletto alato
+P|🧚‍♀️|fata donna
+P|🧛|vampiro
+P|🧛‍♂️|vampiro uomo
+P|🧛‍♀️|vampira
+P|🧜|sirena
+P|🧜‍♂️|tritone
+P|🧜‍♀️|sirena donna
+P|🧝|elfo
+P|🧝‍♂️|elfo uomo
+P|🧝‍♀️|elfo donna
+P|🧞|genio
+P|🧞‍♂️|genio uomo
+P|🧞‍♀️|genio donna
+P|🧟|zombie
+P|🧟‍♂️|zombie uomo
+P|🧟‍♀️|zombie donna
+P|🧌|troll
+P|🫈|creatura pelosa
+P|💆|persona che riceve un massaggio
+P|💆‍♂️|uomo che riceve un massaggio
+P|💆‍♀️|donna che riceve un massaggio
+P|💇|taglio di capelli
+P|💇‍♂️|taglio di capelli per uomo
+P|💇‍♀️|taglio di capelli per donna
+P|🚶|pedone
+P|🚶‍♂️|uomo che cammina
+P|🚶‍♀️|donna che cammina
+P|🚶‍➡️|pedone: a destra
+P|🚶‍♀️‍➡️|donna che cammina: a destra
+P|🚶‍♂️‍➡️|uomo che cammina: a destra
+P|🧍|persona in piedi
+P|🧍‍♂️|uomo in piedi
+P|🧍‍♀️|donna in piedi
+P|🧎|persona inginocchiata
+P|🧎‍♂️|uomo inginocchiato
+P|🧎‍♀️|donna inginocchiata
+P|🧎‍➡️|persona inginocchiata: a destra
+P|🧎‍♀️‍➡️|donna inginocchiata: a destra
+P|🧎‍♂️‍➡️|uomo inginocchiato: a destra
+P|🧑‍🦯|persona con bastone di orientamento
+P|🧑‍🦯‍➡️|persona con bastone di orientamento: a destra
+P|👨‍🦯|uomo con bastone bianco di orientamento
+P|👨‍🦯‍➡️|uomo con bastone bianco di orientamento: a destra
+P|👩‍🦯|donna con bastone bianco di orientamento
+P|👩‍🦯‍➡️|donna con bastone bianco di orientamento: a destra
+P|🧑‍🦼|persona su sedia a rotelle motorizzata
+P|🧑‍🦼‍➡️|persona su sedia a rotelle motorizzata: a destra
+P|👨‍🦼|uomo su sedia a rotelle motorizzata
+P|👨‍🦼‍➡️|uomo su sedia a rotelle motorizzata: a destra
+P|👩‍🦼|donna su sedia a rotelle motorizzata
+P|👩‍🦼‍➡️|donna su sedia a rotelle motorizzata: a destra
+P|🧑‍🦽|persona su sedia a rotelle manuale
+P|🧑‍🦽‍➡️|persona su sedia a rotelle manuale: a destra
+P|👨‍🦽|uomo su sedia a rotelle manuale
+P|👨‍🦽‍➡️|uomo su sedia a rotelle manuale: a destra
+P|👩‍🦽|donna su sedia a rotelle manuale
+P|👩‍🦽‍➡️|donna su sedia a rotelle manuale: a destra
+P|🏃|persona che corre
+P|🏃‍♂️|uomo che corre
+P|🏃‍♀️|donna che corre
+P|🏃‍➡️|persona che corre: a destra
+P|🏃‍♀️‍➡️|donna che corre: a destra
+P|🏃‍♂️‍➡️|uomo che corre: a destra
+P|🧑‍🩰|persona che danza
+P|💃|donna che balla
+P|🕺|uomo che balla
+P|🕴️|uomo con completo che levita
+P|👯|persone con orecchie da coniglio
+P|👯‍♂️|uomini con orecchie da coniglio
+P|👯‍♀️|donne con orecchie da coniglio
+P|🧖|persona in sauna
+P|🧖‍♂️|uomo in sauna
+P|🧖‍♀️|donna in sauna
+P|🧗|persona che scala
+P|🧗‍♂️|scalatore
+P|🧗‍♀️|scalatrice
+P|🤺|schermidore
+P|🏇|ippica
+P|⛷️|sciatore
+P|🏂️|persona sullo snowboard
+P|🏌️|persona che gioca a golf
+P|🏌️‍♂️|golfista uomo
+P|🏌️‍♀️|golfista donna
+P|🏄️|persona che fa surf
+P|🏄‍♂️|surfista uomo
+P|🏄‍♀️|surfista donna
+P|🚣|persona in barca a remi
+P|🚣‍♂️|uomo in barca a remi
+P|🚣‍♀️|donna in barca a remi
+P|🏊️|persona che nuota
+P|🏊‍♂️|nuotatore
+P|🏊‍♀️|nuotatrice
+P|⛹️|persona che fa rimbalzare una palla
+P|⛹️‍♂️|uomo che fa rimbalzare una palla
+P|⛹️‍♀️|donna che fa rimbalzare una palla
+P|🏋️|persona che solleva pesi
+P|🏋️‍♂️|uomo che solleva pesi
+P|🏋️‍♀️|donna che solleva pesi
+P|🚴|ciclista
+P|🚴‍♂️|ciclista uomo
+P|🚴‍♀️|ciclista donna
+P|🚵|ciclista di mountain bike
+P|🚵‍♂️|ciclista uomo di mountain bike
+P|🚵‍♀️|ciclista donna di mountain bike
+P|🤸|persona che fa la ruota
+P|🤸‍♂️|uomo che fa la ruota
+P|🤸‍♀️|donna che fa la ruota
+P|🤼|persone che fanno la lotta
+P|🤼‍♂️|lottatori
+P|🤼‍♀️|lottatrici
+P|🤽|persona che gioca a pallanuoto
+P|🤽‍♂️|pallanuotista uomo
+P|🤽‍♀️|pallanuotista donna
+P|🤾|persona che gioca a pallamano
+P|🤾‍♂️|pallamanista uomo
+P|🤾‍♀️|pallamanista donna
+P|🤹|persona che fa giocoleria
+P|🤹‍♂️|giocoliere uomo
+P|🤹‍♀️|giocoliere donna
+P|🧘|persona in posizione del loto
+P|🧘‍♂️|uomo in posizione del loto
+P|🧘‍♀️|donna in posizione del loto
+P|🛀|persona che fa il bagno
+P|🛌|persona a letto
+P|🧑‍🤝‍🧑|persone che si tengono per mano
+P|👭|due donne che si tengono per mano
+P|👫|uomo e donna che si tengono per mano
+P|👬|due uomini che si tengono per mano
+P|💏|bacio tra coppia
+P|👩‍❤️‍💋‍👨|bacio tra coppia: donna e uomo
+P|👨‍❤️‍💋‍👨|bacio tra coppia: uomo e uomo
+P|👩‍❤️‍💋‍👩|bacio tra coppia: donna e donna
+P|💑|coppia con cuore
+P|👩‍❤️‍👨|coppia con cuore: donna e uomo
+P|👨‍❤️‍👨|coppia con cuore: uomo e uomo
+P|👩‍❤️‍👩|coppia con cuore: donna e donna
+P|👨‍👩‍👦|famiglia: uomo, donna e bambino
+P|👨‍👩‍👧|famiglia: uomo, donna e bambina
+P|👨‍👩‍👧‍👦|famiglia: uomo, donna, bambina e bambino
+P|👨‍👩‍👦‍👦|famiglia: uomo, donna, bambino e bambino
+P|👨‍👩‍👧‍👧|famiglia: uomo, donna, bambina e bambina
+P|👨‍👨‍👦|famiglia: uomo, uomo e bambino
+P|👨‍👨‍👧|famiglia: uomo, uomo e bambina
+P|👨‍👨‍👧‍👦|famiglia: uomo, uomo, bambina e bambino
+P|👨‍👨‍👦‍👦|famiglia: uomo, uomo, bambino e bambino
+P|👨‍👨‍👧‍👧|famiglia: uomo, uomo, bambina e bambina
+P|👩‍👩‍👦|famiglia: donna, donna e bambino
+P|👩‍👩‍👧|famiglia: donna, donna e bambina
+P|👩‍👩‍👧‍👦|famiglia: donna, donna, bambina e bambino
+P|👩‍👩‍👦‍👦|famiglia: donna, donna, bambino e bambino
+P|👩‍👩‍👧‍👧|famiglia: donna, donna, bambina e bambina
+P|👨‍👦|famiglia: uomo e bambino
+P|👨‍👦‍👦|famiglia: uomo, bambino e bambino
+P|👨‍👧|famiglia: uomo e bambina
+P|👨‍👧‍👦|famiglia: uomo, bambina e bambino
+P|👨‍👧‍👧|famiglia: uomo, bambina e bambina
+P|👩‍👦|famiglia: donna e bambino
+P|👩‍👦‍👦|famiglia: donna, bambino e bambino
+P|👩‍👧|famiglia: donna e bambina
+P|👩‍👧‍👦|famiglia: donna, bambina e bambino
+P|👩‍👧‍👧|famiglia: donna, bambina e bambina
+P|🗣️|persona che parla
+P|👤|profilo di persona
+P|👥|profilo di due persone
+P|🫂|persone che si abbracciano
+P|👪️|famiglia
+P|🧑‍🧑‍🧒|famiglia: persone adulte, minore
+P|🧑‍🧑‍🧒‍🧒|famiglia: persone adulte, minori
+P|🧑‍🧒|famiglia: persona adulta, minore
+P|🧑‍🧒‍🧒|famiglia: persona adulta, minore, minore
+P|👣|impronta di piedi
+P|🫆|impronta digitale
+P|🐵|muso di scimmia
+P|🐒|scimmia
+P|🦍|gorilla
+P|🦧|orangotango
+P|🐶|muso di cane
+P|🐕️|cane
+P|🦮|cane guida
+P|🐕‍🦺|cane da assistenza
+P|🐩|barboncino
+P|🐺|lupo
+P|🦊|volpe
+P|🦝|procione
+P|🐱|muso di gatto
+P|🐈️|gatto
+P|🐈‍⬛|gatto nero
+P|🦁|leone
+P|🐯|muso di tigre
+P|🐅|tigre
+P|🐆|leopardo
+P|🐴|muso di cavallo
+P|🫎|alce
+P|🫏|asino
+P|🐎|cavallo
+P|🦄|unicorno
+P|🦓|zebra
+P|🦌|cervo
+P|🦬|bisonte
+P|🐮|muso di mucca
+P|🐂|bue
+P|🐃|bufalo d’acqua
+P|🐄|mucca
+P|🐷|muso di maiale
+P|🐖|maiale
+P|🐗|cinghiale
+P|🐽|naso da maiale
+P|🐏|montone
+P|🐑|pecora
+P|🐐|capra
+P|🐪|dromedario
+P|🐫|cammello
+P|🦙|lama
+P|🦒|giraffa
+P|🐘|elefante
+P|🦣|mammut
+P|🦏|rinoceronte
+P|🦛|ippopotamo
+P|🐭|muso di topo
+P|🐁|topo
+P|🐀|ratto
+P|🐹|criceto
+P|🐰|muso di coniglio
+P|🐇|coniglio
+P|🐿️|scoiattolo
+P|🦫|castoro
+P|🦔|riccio
+P|🦇|pipistrello
+P|🐻|orso
+P|🐻‍❄️|orso polare
+P|🐨|koala
+P|🐼|panda
+P|🦥|bradipo
+P|🦦|lontra
+P|🦨|puzzola
+P|🦘|canguro
+P|🦡|tasso
+P|🐾|impronte di zampe
+P|🦃|tacchino
+P|🐔|gallina
+P|🐓|gallo
+P|🐣|pulcino che nasce
+P|🐤|pulcino
+P|🐥|pulcino visto di fronte
+P|🐦️|uccello
+P|🐧|pinguino
+P|🕊️|colomba
+P|🦅|aquila
+P|🦆|anatra
+P|🦢|cigno
+P|🦉|gufo
+P|🦤|dodo
+P|🪶|piuma
+P|🦩|fenicottero
+P|🦚|pavone
+P|🦜|pappagallo
+P|🪽|ala
+P|🐦‍⬛|merlo
+P|🪿|oca
+P|🐦‍🔥|fenice
+P|🐸|rana
+P|🐊|coccodrillo
+P|🐢|tartaruga
+P|🦎|lucertola
+P|🐍|serpente
+P|🐲|testa di drago
+P|🐉|drago
+P|🦕|sauropode
+P|🦖|T-Rex
+P|🐳|balena che spruzza acqua
+P|🐋|balena
+P|🐬|delfino
+P|🫍|orca
+P|🦭|foca
+P|🐟️|pesce
+P|🐠|pesce tropicale
+P|🐡|pesce palla
+P|🦈|squalo
+P|🐙|polpo
+P|🐚|conchiglia
+P|🪸|corallo
+P|🪼|medusa
+P|🦀|granchio
+P|🦞|aragosta
+P|🦐|gamberetto
+P|🦑|calamaro
+P|🦪|ostrica
+P|🐌|lumaca
+P|🦋|farfalla
+P|🐛|insetto
+P|🐜|formica
+P|🐝|ape
+P|🪲|coleottero
+P|🐞|coccinella
+P|🦗|grillo
+P|🪳|scarafaggio
+P|🕷️|ragno
+P|🕸️|ragnatela
+P|🦂|scorpione
+P|🦟|zanzara
+P|🪰|mosca
+P|🪱|verme
+P|🦠|microbo
+O|💐|mazzo di fiori
+O|🌸|fiore di ciliegio
+O|💮|fiore bianco
+O|🪷|loto
+O|🏵️|rosetta
+O|🌹|rosa
+O|🥀|fiore appassito
+O|🌺|ibisco
+O|🌻|girasole
+O|🌼|fiore
+O|🌷|tulipano
+O|🪻|giacinto
+O|🌱|germoglio
+O|🪴|pianta in vaso
+O|🌲|albero sempreverde
+O|🌳|albero deciduo
+O|🌴|palma
+O|🌵|cactus
+O|🌾|pianta di riso
+O|🌿|pianta
+O|☘️|trifoglio
+O|🍀|quadrifoglio
+O|🍁|foglia d’acero
+O|🍂|foglia caduta
+O|🍃|foglia al vento
+O|🪹|nido vuoto
+O|🪺|nido con uova
+O|🍄|fungo
+O|🪾|albero spoglio
+O|🍇|uva
+O|🍈|melone
+O|🍉|anguria
+O|🍊|mandarino
+O|🍋|limone
+O|🍋‍🟩|lime
+O|🍌|banana
+O|🍍|ananas
+O|🥭|mango
+O|🍎|mela rossa
+O|🍏|mela verde
+O|🍐|pera
+O|🍑|pesca
+O|🍒|ciliegie
+O|🍓|fragola
+O|🫐|mirtilli
+O|🥝|kiwi
+O|🍅|pomodoro
+O|🫒|oliva
+O|🥥|cocco
+O|🥑|avocado
+O|🍆|melanzana
+O|🥔|patata
+O|🥕|carota
+O|🌽|pannocchia
+O|🌶️|peperoncino
+O|🫑|peperone
+O|🥒|cetriolo
+O|🥬|verdure a foglia
+O|🥦|broccoli
+O|🧄|aglio
+O|🧅|cipolla
+O|🥜|arachidi
+O|🫘|fagioli
+O|🌰|castagna
+O|🫚|radice di zenzero
+O|🫛|baccello di piselli
+O|🍄‍🟫|fungo marrone
+O|🫜|ortaggio da radice
+O|🍞|pane in cassetta
+O|🥐|croissant
+O|🥖|baguette
+O|🫓|focaccia
+O|🥨|pretzel
+O|🥯|bagel
+O|🥞|pancake
+O|🧇|waffle
+O|🧀|fetta di formaggio
+O|🍖|carne
+O|🍗|coscia di pollo
+O|🥩|taglio di carne
+O|🥓|pancetta
+O|🍔|hamburger
+O|🍟|patatine
+O|🍕|pizza
+O|🌭|hot dog
+O|🥪|sandwich
+O|🌮|taco
+O|🌯|burrito
+O|🫔|tamale
+O|🥙|pita farcita
+O|🧆|falafel
+O|🥚|uovo
+O|🍳|cucinare
+O|🥘|padella con cibo
+O|🍲|pentola di cibo
+O|🫕|fonduta
+O|🥣|ciotola con cucchiaio
+O|🥗|insalata verde
+O|🍿|popcorn
+O|🧈|burro
+O|🧂|sale
+O|🥫|cibo in scatola
+O|🍱|bento box
+O|🍘|galletta di riso
+O|🍙|onigiri
+O|🍚|riso bollito
+O|🍛|riso al curry
+O|🍜|ciotola fumante
+O|🍝|spaghetti
+O|🍠|patata dolce arrosto
+O|🍢|oden giapponese
+O|🍣|sushi
+O|🍤|gambero fritto
+O|🍥|tortino di pesce a spirale
+O|🥮|torta della luna
+O|🍡|dango
+O|🥟|raviolo
+O|🥠|biscotto della fortuna
+O|🥡|confezione da asporto
+O|🍦|cono gelato
+O|🍧|granita
+O|🍨|coppa di gelato
+O|🍩|ciambella
+O|🍪|biscotto
+O|🎂|torta di compleanno
+O|🍰|fetta di torta
+O|🧁|cupcake
+O|🥧|torta
+O|🍫|cioccolato
+O|🍬|caramella
+O|🍭|lecca lecca
+O|🍮|budino
+O|🍯|barattolo di miele
+O|🍼|biberon
+O|🥛|bicchiere di latte
+O|☕️|bevanda calda
+O|🫖|teiera
+O|🍵|tazza da tè senza manico
+O|🍶|sakè
+O|🍾|bottiglia stappata
+O|🍷|bicchiere di vino
+O|🍸️|cocktail
+O|🍹|cocktail tropicale
+O|🍺|boccale di birra
+O|🍻|boccali di birra
+O|🥂|brindisi
+O|🥃|bicchiere tumbler
+O|🫗|liquido versato
+O|🥤|bicchiere con cannuccia
+O|🧋|bubble tea
+O|🧃|bevanda monodose
+O|🧉|mate
+O|🧊|cubetto di ghiaccio
+O|🥢|bacchette
+O|🍽️|piatto e posate
+O|🍴|forchetta e coltello
+O|🥄|cucchiaio
+O|🔪|coltello da cucina
+O|🫙|barattolo
+O|🏺|anfora
+L|🌍️|Europa e Africa
+L|🌎️|America
+L|🌏️|Asia e Australia
+L|🌐|globo con meridiani
+L|🗺️|mappa mondiale
+L|🗾|mappa del Giappone
+L|🧭|bussola
+L|🏔️|montagna innevata
+L|⛰️|montagna
+L|🛘|frana
+L|🌋|vulcano
+L|🗻|Monte Fuji
+L|🏕️|campeggio
+L|🏖️|spiaggia con ombrellone
+L|🏜️|deserto
+L|🏝️|isola deserta
+L|🏞️|parco nazionale
+L|🏟️|stadio
+L|🏛️|edificio classico
+L|🏗️|edificio in costruzione
+L|🧱|mattoni
+L|🪨|roccia
+L|🪵|legna
+L|🛖|capanna
+L|🏘️|case
+L|🏚️|casa in rovina
+L|🏠️|casa
+L|🏡|casa con giardino
+L|🏢|edificio
+L|🏣|ufficio postale giapponese
+L|🏤|ufficio postale
+L|🏥|ospedale
+L|🏦|banca
+L|🏨|hotel
+L|🏩|love hotel
+L|🏪|minimarket
+L|🏫|scuola
+L|🏬|grande magazzino
+L|🏭️|fabbrica
+L|🏯|castello giapponese
+L|🏰|castello
+L|💒|chiesa per matrimonio
+L|🗼|Torre di Tokyo
+L|🗽|Statua della Libertà
+L|⛪️|chiesa
+L|🕌|moschea
+L|🛕|tempio indù
+L|🕍|sinagoga
+L|⛩️|santuario shintoista
+L|🕋|Kaaba
+L|⛲️|fontana
+L|⛺️|tenda
+L|🌁|nebbioso
+L|🌃|notte stellata
+L|🏙️|paesaggio urbano
+L|🌄|alba sulle montagne
+L|🌅|alba
+L|🌆|città al tramonto
+L|🌇|tramonto
+L|🌉|ponte di notte
+L|♨️|sorgenti termali
+L|🎠|cavallo da giostra
+L|🛝|scivolo
+L|🎡|ruota panoramica
+L|🎢|montagne russe
+L|💈|barbiere
+L|🎪|circo
+O|🚂|locomotiva
+O|🚃|vagone
+O|🚄|treno alta velocità
+O|🚅|treno alta velocità punta arrotondata
+O|🚆|treno
+O|🚇️|metropolitana
+O|🚈|metrotranvia
+O|🚉|stazione
+O|🚊|tram
+O|🚝|monorotaia
+O|🚞|ferrovia di montagna
+O|🚋|vagone del tram
+O|🚌|bus
+O|🚍️|bus in arrivo
+O|🚎|filobus
+O|🚐|pulmino
+O|🚑️|ambulanza
+O|🚒|camion dei pompieri
+O|🚓|macchina della polizia
+O|🚔️|macchina della polizia in arrivo
+O|🚕|taxi
+O|🚖|taxi in arrivo
+O|🚗|auto
+O|🚘️|auto in arrivo
+O|🚙|SUV
+O|🛻|pickup
+O|🚚|camion
+O|🚛|autoarticolato
+O|🚜|trattore
+O|🏎️|auto da corsa
+O|🏍️|motocicletta
+O|🛵|scooter
+O|🦽|sedia a rotelle manuale
+O|🦼|sedia a rotelle motorizzata
+O|🛺|risciò a motore
+O|🚲️|bicicletta
+O|🛴|monopattino
+O|🛹|skateboard
+O|🛼|pattini a rotelle
+O|🚏|fermata dell’autobus
+O|🛣️|autostrada
+O|🛤️|binari
+O|🛢️|barile di petrolio
+O|⛽️|stazione di servizio
+O|🛞|ruota
+O|🚨|lampeggiante
+O|🚥|semaforo orizzontale
+O|🚦|semaforo verticale
+O|🛑|segnale di stop
+O|🚧|area cantiere
+O|⚓️|ancora
+O|🛟|salvagente
+O|⛵️|barca a vela
+O|🛶|canoa
+O|🚤|motoscafo
+O|🛳️|nave da crociera
+O|⛴️|traghetto
+O|🛥️|barca a motore
+O|🚢|nave
+O|✈️|aeroplano
+O|🛩️|aereo turistico
+O|🛫|decollo
+O|🛬|atterraggio
+O|🪂|paracadute
+O|💺|sedile
+O|🚁|elicottero
+O|🚟|ferrovia sospesa
+O|🚠|funivia
+O|🚡|funivia aerea
+O|🛰️|satellite
+O|🚀|razzo
+O|🛸|disco volante
+L|🛎️|campanello da hotel
+L|🧳|valigia
+S|⌛️|clessidra
+S|⏳️|clessidra che scorre
+S|⌚️|orologio
+S|⏰️|sveglia
+S|⏱️|cronometro
+S|⏲️|timer
+S|🕰️|orologio da mensola
+S|🕛️|ore dodici
+S|🕧️|ore dodici e mezza
+S|🕐️|ore una
+S|🕜️|ore una e mezza
+S|🕑️|ore due
+S|🕝️|ore due e mezza
+S|🕒️|ore tre
+S|🕞️|ore tre e mezza
+S|🕓️|ore quattro
+S|🕟️|ore quattro e mezza
+S|🕔️|ore cinque
+S|🕠️|ore cinque e mezza
+S|🕕️|ore sei
+S|🕡️|ore sei e mezza
+S|🕖️|ore sette
+S|🕢️|ore sette e mezza
+S|🕗️|ore otto
+S|🕣️|ore otto e mezza
+S|🕘️|ore nove
+S|🕤️|ore nove e mezza
+S|🕙️|ore dieci
+S|🕥️|ore dieci e mezza
+S|🕚️|ore undici
+S|🕦️|ore undici e mezza
+M|🌑|luna nuova
+M|🌒|luna crescente
+M|🌓|primo quarto di luna
+M|🌔|luna gibbosa crescente
+M|🌕️|luna piena
+M|🌖|luna gibbosa calante
+M|🌗|ultimo quarto di luna
+M|🌘|luna calante
+M|🌙|spicchio di luna
+M|🌚|faccina luna nuova
+M|🌛|faccina primo quarto di luna
+M|🌜️|faccina ultimo quarto di luna
+M|🌡️|termometro
+M|☀️|sole
+M|🌝|faccina luna piena
+M|🌞|faccina sole
+M|🪐|pianeta con satellite
+M|⭐️|stella
+M|🌟|stella che brilla
+M|🌠|stella cadente
+M|🌌|Via Lattea
+M|☁️|nuvola
+M|⛅️|sole coperto
+M|⛈️|temporale
+M|🌤️|parzialmente nuvoloso
+M|🌥️|molto nuvoloso
+M|🌦️|sole coperto e pioggia
+M|🌧️|pioggia
+M|🌨️|neve
+M|🌩️|fulmini
+M|🌪️|tornado
+M|🌫️|nebbia
+M|🌬️|vento
+M|🌀|ciclone
+M|🌈|arcobaleno
+M|🌂|ombrello chiuso
+M|☂️|ombrello
+M|☔️|ombrello con gocce di pioggia
+M|⛱️|ombrellone
+M|⚡️|alta tensione
+M|❄️|fiocco di neve
+M|☃️|pupazzo di neve
+M|⛄️|pupazzo di neve senza neve
+M|☄️|cometa
+M|🔥|fuoco
+M|💧|goccia
+M|🌊|onda
+O|🎃|zucca di Halloween
+O|🎄|albero di Natale
+O|🎆|fuochi d’artificio
+O|🎇|stellina scintillante
+O|🧨|petardo
+O|✨️|stelline
+O|🎈|palloncino
+O|🎉|spara coriandoli
+O|🎊|coriandoli
+O|🎋|albero di Tanabata
+O|🎍|bambù decorato
+O|🎎|bambole giapponesi
+O|🎏|aquilone a forma di carpa
+O|🎐|campana al vento
+O|🎑|contemplazione della luna
+O|🧧|busta hongbao
+O|🎀|fiocco
+O|🎁|regalo
+O|🎗️|nastro
+O|🎟️|biglietto d’ingresso
+O|🎫|biglietto
+O|🎖️|medaglia militare
+O|🏆️|coppa
+O|🏅|medaglia sportiva
+O|🥇|medaglia d’oro
+O|🥈|medaglia d’argento
+O|🥉|medaglia di bronzo
+O|⚽️|pallone da calcio
+O|⚾️|palla da baseball
+O|🥎|palla da softball
+O|🏀|palla da pallacanestro
+O|🏐|palla da pallavolo
+O|🏈|football americano
+O|🏉|pallone da rugby
+O|🎾|tennis
+O|🥏|frisbee
+O|🎳|bowling
+O|🏏|cricket
+O|🏑|hockey su prato
+O|🏒|hockey su ghiaccio
+O|🥍|lacrosse
+O|🏓|ping pong
+O|🏸|badminton
+O|🥊|guantone da pugilato
+O|🥋|kimono per arti marziali
+O|🥅|porta da calcio
+O|⛳️|bandiera in buca
+O|⛸️|pattinaggio su ghiaccio
+O|🎣|canna da pesca
+O|🤿|maschera da sub
+O|🎽|maglia da corsa
+O|🎿|sci
+O|🛷|slitta
+O|🥌|stone da curling
+O|🎯|bersaglio
+O|🪀|yo-yo
+O|🪁|aquilone
+O|🔫|pistola ad acqua
+O|🎱|palla da biliardo
+O|🔮|sfera di cristallo
+O|🪄|bacchetta magica
+O|🎮️|gamepad
+O|🕹️|joystick
+O|🎰|slot machine
+O|🎲|dado
+O|🧩|pezzo di puzzle
+O|🧸|orsetto
+O|🪅|pentolaccia
+O|🪩|palla da discoteca
+O|🪆|matrioska
+O|♠️|picche
+O|♥️|cuori
+O|♦️|quadri
+O|♣️|fiori
+O|♟️|pedina degli scacchi
+O|🃏|jolly
+O|🀄️|tessera Mahjong
+O|🎴|carta da gioco Hanafuda
+O|🎭️|maschere
+O|🖼️|quadro incorniciato
+O|🎨|tavolozza
+O|🧵|filo
+O|🪡|ago da cucito
+O|🧶|gomitolo
+O|🪢|nodo
+O|👓️|occhiali da vista
+O|🕶️|occhiali da sole
+O|🥽|maschera
+O|🥼|camice
+O|🦺|gilet di sicurezza
+O|👔|cravatta
+O|👕|t-shirt
+O|👖|jeans
+O|🧣|sciarpa
+O|🧤|guanti
+O|🧥|cappotto
+O|🧦|calzini
+O|👗|vestito
+O|👘|kimono
+O|🥻|sari
+O|🩱|costume da bagno intero
+O|🩲|slip
+O|🩳|pantaloncini
+O|👙|bikini
+O|👚|maglietta da donna
+O|🪭|ventaglio
+O|👛|borsellino
+O|👜|borsa
+O|👝|pochette
+O|🛍️|borse della spesa
+O|🎒|zaino
+O|🩴|infradito
+O|👞|scarpa da uomo
+O|👟|scarpa sportiva
+O|🥾|stivale da trekking
+O|🥿|ballerina
+O|👠|scarpa con il tacco
+O|👡|sandalo da donna
+O|🩰|scarpette da ballerina
+O|👢|stivale da donna
+O|🪮|pettine afro
+O|👑|corona
+O|👒|cappello da donna
+O|🎩|cilindro
+O|🎓️|cappello da laureato
+O|🧢|cappello con visiera
+O|🪖|elmetto militare
+O|⛑️|elmetto con croce bianca
+O|📿|collana da preghiera
+O|💄|rossetto
+O|💍|anello
+O|💎|gemma
+O|🔇|altoparlante disattivato
+O|🔈️|altoparlante a volume basso
+O|🔉|altoparlante a volume intermedio
+O|🔊|altoparlante a volume alto
+O|📢|altoparlante
+O|📣|megafono
+O|📯|corno postale
+O|🔔|campana
+O|🔕|campana sbarrata
+O|🎼|pentagramma
+O|🎵|nota musicale
+O|🎶|note musicali
+O|🎙️|microfono radiofonico
+O|🎚️|cursore del volume
+O|🎛️|manopole di controllo
+O|🎤|microfono
+O|🎧️|cuffie
+O|📻️|radio
+O|🎷|sassofono
+O|🎺|tromba
+O|🪊|trombone
+O|🪗|fisarmonica
+O|🎸|chitarra
+O|🎹|piano
+O|🎻|violino
+O|🪕|banjo
+O|🥁|tamburo
+O|🪘|tamburo lungo
+O|🪇|maracas
+O|🪈|flauto
+O|🪉|arpa
+O|📱|telefono cellulare
+O|📲|telefono cellulare con freccia
+O|☎️|telefono fisso
+O|📞|cornetta
+O|📟️|cercapersone
+O|📠|fax
+O|🔋|batteria
+O|🪫|batteria scarica
+O|🔌|spina elettrica
+O|💻️|computer portatile
+O|🖥️|computer fisso
+O|🖨️|stampante
+O|⌨️|tastiera
+O|🖱️|mouse
+O|🖲️|trackball
+O|💽|minidisc
+O|💾|floppy disc
+O|💿️|disco ottico
+O|📀|DVD
+O|🧮|abaco
+O|🎥|cinepresa
+O|🎞️|pellicola cinematografica
+O|📽️|proiettore cinematografico
+O|🎬️|ciak
+O|📺️|televisore
+O|📷️|fotocamera
+O|📸|fotocamera con flash
+O|📹️|videocamera
+O|📼|videocassetta
+O|🔍️|lente di ingrandimento rivolta a sinistra
+O|🔎|lente di ingrandimento rivolta a destra
+O|🕯️|candela
+O|💡|lampadina
+O|🔦|torcia
+O|🏮|lanterna rossa
+O|🪔|diya
+O|📔|quaderno con copertina decorata
+O|📕|libro chiuso
+O|📖|libro aperto
+O|📗|libro verde
+O|📘|libro blu
+O|📙|libro arancione
+O|📚️|libri
+O|📓|quaderno
+O|📒|quaderno ad anelli
+O|📃|pagina con piega
+O|📜|pergamena
+O|📄|pagina
+O|📰|quotidiano
+O|🗞️|quotidiano arrotolato
+O|📑|etichette segnalibro
+O|🔖|segnalibro
+O|🏷️|etichetta
+O|🪙|moneta
+O|💰️|sacco di soldi
+O|🪎|forziere
+O|💴|banconota Yen
+O|💵|banconota Dollaro
+O|💶|banconota Euro
+O|💷|banconota Sterlina
+O|💸|soldi con le ali
+O|💳️|carta di credito
+O|🧾|scontrino
+O|💹|grafico ascendente
+O|✉️|busta
+O|📧|e-mail
+O|📨|posta in arrivo
+O|📩|posta in uscita
+O|📤️|posta inviata
+O|📥️|posta ricevuta
+O|📦️|pacco
+O|📫️|cassetta postale chiusa bandierina alzata
+O|📪️|cassetta postale chiusa bandierina abbassata
+O|📬️|cassetta postale aperta bandierina alzata
+O|📭️|cassetta postale aperta bandierina abbassata
+O|📮|cassetta delle lettere
+O|🗳️|urna elettorale con scheda
+O|✏️|matita
+O|✒️|pennino
+O|🖋️|penna stilografica
+O|🖊️|penna a sfera
+O|🖌️|pennello
+O|🖍️|pastello a cera
+O|📝|memo
+O|💼|valigetta 24 ore
+O|📁|cartella file
+O|📂|cartella aperta
+O|🗂️|divisori per schedario
+O|📅|calendario
+O|📆|calendario a strappo
+O|🗒️|blocco per appunti con spirale
+O|🗓️|calendario a spirale
+O|📇|schedario
+O|📈|grafico con andamento positivo
+O|📉|grafico con andamento negativo
+O|📊|grafico a barre
+O|📋️|portablocco
+O|📌|puntina
+O|📍|puntina arrotondata
+O|📎|graffetta
+O|🖇️|graffette attaccate
+O|📏|righello
+O|📐|squadra
+O|✂️|forbici
+O|🗃️|schedario da tavolo
+O|🗄️|schedario da ufficio
+O|🗑️|cestino
+O|🔒️|lucchetto chiuso
+O|🔓️|lucchetto aperto
+O|🔏|lucchetto con penna stilo
+O|🔐|lucchetto chiuso con chiave
+O|🔑|chiave
+O|🗝️|chiave antica
+O|🔨|martello
+O|🪓|ascia
+O|⛏️|piccone
+O|⚒️|piccone e martello
+O|🛠️|martello e chiave inglese
+O|🗡️|pugnale
+O|⚔️|spade incrociate
+O|💣️|bomba
+O|🪃|boomerang
+O|🏹|arco e freccia
+O|🛡️|scudo
+O|🪚|sega da falegname
+O|🔧|chiave inglese
+O|🪛|cacciavite
+O|🔩|vite e bullone
+O|⚙️|ingranaggio
+O|🗜️|morsetto
+O|⚖️|bilancia a doppio piatto
+O|🦯|bastone per non vedenti
+O|🔗|collegamento
+O|⛓️‍💥|catena spezzata
+O|⛓️|catene
+O|🪝|gancio
+O|🧰|cassetta degli attrezzi
+O|🧲|calamita
+O|🪜|scala
+O|🪏|vanga
+O|⚗️|alambicco
+O|🧪|provetta
+O|🧫|piastra di Petri
+O|🧬|dna
+O|🔬|microscopio
+O|🔭|telescopio
+O|📡|antenna satellitare
+O|💉|siringa
+O|🩸|goccia di sangue
+O|💊|pillola
+O|🩹|cerotto
+O|🩼|stampella
+O|🩺|stetoscopio
+O|🩻|radiografia
+O|🚪|porta
+O|🛗|ascensore
+O|🪞|specchio
+O|🪟|finestra
+O|🛏️|letto
+O|🛋️|divano e lampada
+O|🪑|sedia
+O|🚽|toilette
+O|🪠|sturalavandini
+O|🚿|doccia
+O|🛁|vasca
+O|🪤|trappola per topi
+O|🪒|rasoio
+O|🧴|flacone
+O|🧷|spilla da balia
+O|🧹|scopa
+O|🧺|cesto
+O|🧻|rotolo di carta igienica
+O|🪣|secchio
+O|🧼|sapone
+O|🫧|bolle
+O|🪥|spazzolino da denti
+O|🧽|spugna
+O|🧯|estintore
+O|🛒|carrello
+O|🚬|sigaretta
+O|⚰️|bara
+O|🪦|lapide
+O|⚱️|urna funeraria
+O|🧿|occhio di Allah
+O|🪬|mano di Fatima
+O|🗿|Moai
+O|🪧|cartello
+O|🪪|carta d’identità
+O|🏧|simbolo dello sportello bancomat
+O|🚮|simbolo per la raccolta dei rifiuti
+O|🚰|acqua potabile
+O|♿️|simbolo della disabilità
+O|🚹️|simbolo del bagno degli uomini
+O|🚺️|simbolo del bagno delle donne
+O|🚻|simbolo dei servizi igienici
+O|🚼️|simbolo con immagine di bambino
+O|🚾|simbolo del WC
+O|🛂|simbolo del controllo passaporti
+O|🛃|simbolo della dogana
+O|🛄|simbolo del ritiro bagagli
+O|🛅|simbolo del deposito bagagli
+O|⚠️|simbolo di avviso
+O|🚸|attraversamento bambini
+O|⛔️|segnale di divieto di accesso
+O|🚫|segnale di divieto
+O|🚳|segnale di divieto di transito delle biciclette
+O|🚭️|segnale di vietato fumare
+O|🚯|simbolo del divieto di gettare rifiuti
+O|🚱|simbolo di acqua non potabile
+O|🚷|simbolo del divieto di transito pedoni
+O|📵|simbolo che vieta l’uso dei cellulari
+O|🔞|simbolo di divieto ai minorenni
+O|☢️|simbolo della radioattività
+O|☣️|simbolo del rischio biologico
+O|⬆️|freccia rivolta verso l’alto
+O|↗️|freccia rivolta verso destra che punta in alto
+O|➡️|freccia rivolta verso destra
+O|↘️|freccia in basso a destra
+O|⬇️|freccia rivolta verso il basso
+O|↙️|freccia in basso a sinistra
+O|⬅️|freccia rivolta a sinistra
+O|↖️|freccia in alto a sinistra
+O|↕️|freccia su-giù
+O|↔️|freccia sinistra-destra
+O|↩️|freccia curva a sinistra
+O|↪️|freccia curva a destra
+O|⤴️|freccia curva in alto
+O|⤵️|freccia curva in basso
+O|🔃|frecce verticali che ruotano in senso orario
+O|🔄|frecce che ruotano in senso antiorario
+O|🔙|freccia BACK
+O|🔚|freccia END
+O|🔛|freccia ON
+O|🔜|freccia SOON
+O|🔝|freccia TOP
+O|🛐|luogo di culto
+O|⚛️|simbolo dell’atomo
+O|🕉️|Om
+O|✡️|stella di David
+O|☸️|ruota del Dharma
+O|☯️|Yin e Yang
+O|✝️|croce latina
+O|☦️|croce ortodossa
+O|☪️|mezzaluna e stella
+O|☮️|simbolo della pace
+O|🕎|Menorah
+O|🔯|stella a sei punte
+O|🪯|khanda
+O|♈️|Segno zodiacale dell’Ariete
+O|♉️|Segno zodiacale del Toro
+O|♊️|Segno zodiacale dei Gemelli
+O|♋️|Segno zodiacale del Cancro
+O|♌️|Segno zodiacale del Leone
+O|♍️|Segno zodiacale della Vergine
+O|♎️|Segno zodiacale della Bilancia
+O|♏️|Segno zodiacale dello Scorpione
+O|♐️|Segno zodiacale del Saggitario
+O|♑️|Segno zodiacale del Capricorno
+O|♒️|Segno zodiacale dell’Acquario
+O|♓️|Segno zodiacale dei Pesci
+O|⛎️|Segno zodiacale dell’Ofiuco
+O|🔀|pulsante di riproduzione casuale
+O|🔁|pulsante di ripetizione della riproduzione
+O|🔂|pulsante di ripetizione della riproduzione di una traccia
+O|▶️|pulsante di riproduzione
+O|⏩️|pulsante di avanzamento rapido
+O|⏭️|traccia successiva
+O|⏯️|pulsante riproduci/pausa
+O|◀️|pulsante di riavvolgimento
+O|⏪️|pulsante di riavvolgimento rapido
+O|⏮️|pulsante traccia precedente
+O|🔼|pulsante a triangolo rivolto verso l’alto
+O|⏫️|pulsante doppia freccia in alto
+O|🔽|pulsante a triangolo rivolto verso il basso
+O|⏬️|doppia freccia in basso
+O|⏸️|pulsante pausa
+O|⏹️|pulsante stop
+O|⏺️|pulsante di registrazione
+O|⏏️|pulsante di espulsione
+O|🎦|simbolo del cinema
+O|🔅|luminosità bassa
+O|🔆|luminosità elevata
+O|📶|segnale cellulare
+O|🛜|wireless
+O|📳|modalità vibrazione
+O|📴|cellulare spento
+O|♀️|simbolo genere femminile
+O|♂️|simbolo genere maschile
+O|⚧️|simbolo transgender
+O|✖️|moltiplicazione
+O|➕️|addizione
+O|➖️|sottrazione
+O|➗️|divisione
+O|🟰|segno di uguaglianza
+O|♾️|simbolo dell’infinito
+O|‼️|doppio punto esclamativo
+O|⁉️|punto esclamativo e interrogativo
+O|❓️|punto interrogativo rosso
+O|❔️|punto interrogativo bianco
+O|❕️|punto esclamativo bianco
+O|❗️|punto esclamativo rosso
+O|〰️|trattino ondulato
+O|💱|cambio valuta
+O|💲|Dollaro
+O|⚕️|simbolo della medicina
+O|♻️|simbolo del riciclaggio
+O|⚜️|giglio araldico
+O|🔱|tridente
+O|📛|tesserino per nome
+O|🔰|ideogramma giapponese di “Principiante”
+O|⭕️|cerchio rosso vuoto
+O|✅️|pulsante segno di spunta
+O|☑️|riquadro con spunta
+O|✔️|segno di spunta
+O|❌️|croce
+O|❎️|croce con quadrato
+O|➰️|occhiello
+O|➿️|doppio occhiello
+O|〽️|simbolo di alternanza delle parti
+O|✳️|asterisco
+O|✴️|stella stilizzata
+O|❇️|scintilla stilizzata
+O|©️|copyright
+O|®️|marchio registrato
+O|™️|marchio
+O|🫟|spruzzo
+O|#️⃣|tasto: #
+O|*️⃣|tasto: *
+O|0️⃣|tasto: 0
+O|1️⃣|tasto: 1
+O|2️⃣|tasto: 2
+O|3️⃣|tasto: 3
+O|4️⃣|tasto: 4
+O|5️⃣|tasto: 5
+O|6️⃣|tasto: 6
+O|7️⃣|tasto: 7
+O|8️⃣|tasto: 8
+O|9️⃣|tasto: 9
+O|🔟|tasto: 10
+O|🔠|pulsante con lettere latine maiuscole
+O|🔡|pulsante con lettere latine minuscole
+O|🔢|pulsante con numeri
+O|🔣|pulsante con simboli
+O|🔤|pulsante con lettere latine
+O|🅰️|gruppo sanguigno A
+O|🆎|gruppo sanguigno AB
+O|🅱️|gruppo sanguigno B
+O|🆑|pulsante CL
+O|🆒|pulsante COOL
+O|🆓|pulsante FREE
+O|ℹ️|punto informazioni
+O|🆔|pulsante ID
+O|Ⓜ️|pulsante M cerchiata
+O|🆕|pulsante NEW
+O|🆖|pulsante NG
+O|🅾️|gruppo sanguigno 0
+O|🆗|pulsante OK
+O|🅿️|pulsante P
+O|🆘|pulsante SOS
+O|🆙|pulsante UP!
+O|🆚|pulsante VS
+O|🈁|ideogramma giapponese per “Qui”
+O|🈂️|ideogramma giapponese di “Costo del servizio”
+O|🈷️|ideogramma giapponese di “Importo mensile”
+O|🈶|ideogramma giapponese di “A pagamento”
+O|🈯️|ideogramma giapponese di “Riservato”
+O|🉐|ideogramma giapponese di “Occasione”
+O|🈹|ideogramma giapponese di “Sconto”
+O|🈚️|ideogramma giapponese di “Gratis”
+O|🈲|ideogramma giapponese di “Proibito”
+O|🉑|ideogramma giapponese di “Accettabile”
+O|🈸|ideogramma giapponese di “Candidatura”
+O|🈴|ideogramma giapponese di “Voto di sufficienza”
+O|🈳|ideogramma giapponese di “Posto libero”
+O|㊗️|ideogramma giapponese di “Congratulazioni”
+O|㊙️|ideogramma giapponese di “Segreto”
+O|🈺|ideogramma giapponese di “Aperto al pubblico”
+O|🈵|ideogramma giapponese di “Nessun posto libero”
+O|🔴|cerchio rosso
+O|🟠|cerchio arancione
+O|🟡|cerchio giallo
+O|🟢|cerchio verde
+O|🔵|cerchio blu
+O|🟣|cerchio viola
+O|🟤|cerchio marrone
+O|⚫️|cerchio nero
+O|⚪️|cerchio bianco
+O|🟥|quadrato rosso
+O|🟧|quadrato arancione
+O|🟨|quadrato giallo
+O|🟩|quadrato verde
+O|🟦|quadrato blu
+O|🟪|quadrato viola
+O|🟫|quadrato marrone
+O|⬛️|quadrato nero grande
+O|⬜️|quadrato bianco grande
+O|◼️|quadrato nero medio
+O|◻️|quadrato bianco medio
+O|◾️|quadrato nero medio-piccolo
+O|◽️|quadrato bianco medio-piccolo
+O|▪️|quadrato nero piccolo
+O|▫️|quadrato bianco piccolo
+O|🔶|rombo arancione grande
+O|🔷|rombo blu grande
+O|🔸|rombo arancione piccolo
+O|🔹|rombo blu piccolo
+O|🔺|triangolo rosso con punta verso l’alto
+O|🔻|triangolo rosso con punta verso il basso
+O|💠|petalo di fiore
+O|🔘|pulsante rotondo
+O|🔳|tasto quadrato nero con bordo bianco
+O|🔲|tasto quadrato bianco con bordo nero
+O|🏁|bandiera a scacchi
+O|🚩|bandierina rossa
+O|🎌|bandiere del Giappone incrociate
+O|🏴|bandiera nera
+O|🏳️|bandiera bianca
+O|🏳️‍🌈|bandiera arcobaleno
+O|🏳️‍⚧️|bandiera transgender
+O|🏴‍☠️|bandiera dei pirati
+F|🇦🇨|Isola Ascensione
+F|🇦🇩|Andorra
+F|🇦🇪|Emirati Arabi Uniti
+F|🇦🇫|Afghanistan
+F|🇦🇬|Antigua e Barbuda
+F|🇦🇮|Anguilla
+F|🇦🇱|Albania
+F|🇦🇲|Armenia
+F|🇦🇴|Angola
+F|🇦🇶|Antartide
+F|🇦🇷|Argentina
+F|🇦🇸|Samoa Americane
+F|🇦🇹|Austria
+F|🇦🇺|Australia
+F|🇦🇼|Aruba
+F|🇦🇽|Isole Åland
+F|🇦🇿|Azerbaigian
+F|🇧🇦|Bosnia ed Erzegovina
+F|🇧🇧|Barbados
+F|🇧🇩|Bangladesh
+F|🇧🇪|Belgio
+F|🇧🇫|Burkina Faso
+F|🇧🇬|Bulgaria
+F|🇧🇭|Bahrein
+F|🇧🇮|Burundi
+F|🇧🇯|Benin
+F|🇧🇱|Saint-Barthélemy
+F|🇧🇲|Bermuda
+F|🇧🇳|Brunei
+F|🇧🇴|Bolivia
+F|🇧🇶|Caraibi Olandesi
+F|🇧🇷|Brasile
+F|🇧🇸|Bahamas
+F|🇧🇹|Bhutan
+F|🇧🇻|Isola Bouvet
+F|🇧🇼|Botswana
+F|🇧🇾|Bielorussia
+F|🇧🇿|Belize
+F|🇨🇦|Canada
+F|🇨🇨|Isole Cocos (Keeling)
+F|🇨🇩|Congo - Kinshasa
+F|🇨🇫|Repubblica Centrafricana
+F|🇨🇬|Congo-Brazzaville
+F|🇨🇭|Svizzera
+F|🇨🇮|Costa d’Avorio
+F|🇨🇰|Isole Cook
+F|🇨🇱|Cile
+F|🇨🇲|Camerun
+F|🇨🇳|Cina
+F|🇨🇴|Colombia
+F|🇨🇵|Isola di Clipperton
+F|🇨🇶|Sark
+F|🇨🇷|Costa Rica
+F|🇨🇺|Cuba
+F|🇨🇻|Capo Verde
+F|🇨🇼|Curaçao
+F|🇨🇽|Isola Christmas
+F|🇨🇾|Cipro
+F|🇨🇿|Cechia
+F|🇩🇪|Germania
+F|🇩🇬|Diego Garcia
+F|🇩🇯|Gibuti
+F|🇩🇰|Danimarca
+F|🇩🇲|Dominica
+F|🇩🇴|Repubblica Dominicana
+F|🇩🇿|Algeria
+F|🇪🇦|Ceuta e Melilla
+F|🇪🇨|Ecuador
+F|🇪🇪|Estonia
+F|🇪🇬|Egitto
+F|🇪🇭|Sahara Occidentale
+F|🇪🇷|Eritrea
+F|🇪🇸|Spagna
+F|🇪🇹|Etiopia
+F|🇪🇺|Unione europea
+F|🇫🇮|Finlandia
+F|🇫🇯|Figi
+F|🇫🇰|Isole Falkland
+F|🇫🇲|Micronesia
+F|🇫🇴|Isole Fær Øer
+F|🇫🇷|Francia
+F|🇬🇦|Gabon
+F|🇬🇧|Regno Unito
+F|🇬🇩|Grenada
+F|🇬🇪|Georgia
+F|🇬🇫|Guyana Francese
+F|🇬🇬|Guernsey
+F|🇬🇭|Ghana
+F|🇬🇮|Gibilterra
+F|🇬🇱|Groenlandia
+F|🇬🇲|Gambia
+F|🇬🇳|Guinea
+F|🇬🇵|Guadalupa
+F|🇬🇶|Guinea Equatoriale
+F|🇬🇷|Grecia
+F|🇬🇸|Georgia del Sud e Sandwich Australi
+F|🇬🇹|Guatemala
+F|🇬🇺|Guam
+F|🇬🇼|Guinea-Bissau
+F|🇬🇾|Guyana
+F|🇭🇰|RAS di Hong Kong
+F|🇭🇲|Isole Heard e McDonald
+F|🇭🇳|Honduras
+F|🇭🇷|Croazia
+F|🇭🇹|Haiti
+F|🇭🇺|Ungheria
+F|🇮🇨|Isole Canarie
+F|🇮🇩|Indonesia
+F|🇮🇪|Irlanda
+F|🇮🇱|Israele
+F|🇮🇲|Isola di Man
+F|🇮🇳|India
+F|🇮🇴|Territorio Britannico dell’Oceano Indiano
+F|🇮🇶|Iraq
+F|🇮🇷|Iran
+F|🇮🇸|Islanda
+F|🇮🇹|Italia
+F|🇯🇪|Jersey
+F|🇯🇲|Giamaica
+F|🇯🇴|Giordania
+F|🇯🇵|Giappone
+F|🇰🇪|Kenya
+F|🇰🇬|Kirghizistan
+F|🇰🇭|Cambogia
+F|🇰🇮|Kiribati
+F|🇰🇲|Comore
+F|🇰🇳|Saint Kitts e Nevis
+F|🇰🇵|Corea del Nord
+F|🇰🇷|Corea del Sud
+F|🇰🇼|Kuwait
+F|🇰🇾|Isole Cayman
+F|🇰🇿|Kazakistan
+F|🇱🇦|Laos
+F|🇱🇧|Libano
+F|🇱🇨|Saint Lucia
+F|🇱🇮|Liechtenstein
+F|🇱🇰|Sri Lanka
+F|🇱🇷|Liberia
+F|🇱🇸|Lesotho
+F|🇱🇹|Lituania
+F|🇱🇺|Lussemburgo
+F|🇱🇻|Lettonia
+F|🇱🇾|Libia
+F|🇲🇦|Marocco
+F|🇲🇨|Monaco
+F|🇲🇩|Moldavia
+F|🇲🇪|Montenegro
+F|🇲🇫|Saint Martin
+F|🇲🇬|Madagascar
+F|🇲🇭|Isole Marshall
+F|🇲🇰|Macedonia del Nord
+F|🇲🇱|Mali
+F|🇲🇲|Myanmar (Birmania)
+F|🇲🇳|Mongolia
+F|🇲🇴|RAS di Macao
+F|🇲🇵|Isole Marianne Settentrionali
+F|🇲🇶|Martinica
+F|🇲🇷|Mauritania
+F|🇲🇸|Montserrat
+F|🇲🇹|Malta
+F|🇲🇺|Mauritius
+F|🇲🇻|Maldive
+F|🇲🇼|Malawi
+F|🇲🇽|Messico
+F|🇲🇾|Malaysia
+F|🇲🇿|Mozambico
+F|🇳🇦|Namibia
+F|🇳🇨|Nuova Caledonia
+F|🇳🇪|Niger
+F|🇳🇫|Isola Norfolk
+F|🇳🇬|Nigeria
+F|🇳🇮|Nicaragua
+F|🇳🇱|Paesi Bassi
+F|🇳🇴|Norvegia
+F|🇳🇵|Nepal
+F|🇳🇷|Nauru
+F|🇳🇺|Niue
+F|🇳🇿|Nuova Zelanda
+F|🇴🇲|Oman
+F|🇵🇦|Panama
+F|🇵🇪|Perù
+F|🇵🇫|Polinesia Francese
+F|🇵🇬|Papua Nuova Guinea
+F|🇵🇭|Filippine
+F|🇵🇰|Pakistan
+F|🇵🇱|Polonia
+F|🇵🇲|Saint-Pierre e Miquelon
+F|🇵🇳|Isole Pitcairn
+F|🇵🇷|Portorico
+F|🇵🇸|Territori Palestinesi
+F|🇵🇹|Portogallo
+F|🇵🇼|Palau
+F|🇵🇾|Paraguay
+F|🇶🇦|Qatar
+F|🇷🇪|Riunione
+F|🇷🇴|Romania
+F|🇷🇸|Serbia
+F|🇷🇺|Russia
+F|🇷🇼|Ruanda
+F|🇸🇦|Arabia Saudita
+F|🇸🇧|Isole Salomone
+F|🇸🇨|Seychelles
+F|🇸🇩|Sudan
+F|🇸🇪|Svezia
+F|🇸🇬|Singapore
+F|🇸🇭|Sant’Elena
+F|🇸🇮|Slovenia
+F|🇸🇯|Svalbard e Jan Mayen
+F|🇸🇰|Slovacchia
+F|🇸🇱|Sierra Leone
+F|🇸🇲|San Marino
+F|🇸🇳|Senegal
+F|🇸🇴|Somalia
+F|🇸🇷|Suriname
+F|🇸🇸|Sud Sudan
+F|🇸🇹|São Tomé e Príncipe
+F|🇸🇻|El Salvador
+F|🇸🇽|Sint Maarten
+F|🇸🇾|Siria
+F|🇸🇿|Eswatini
+F|🇹🇦|Tristan da Cunha
+F|🇹🇨|Isole Turks e Caicos
+F|🇹🇩|Ciad
+F|🇹🇫|Terre Australi Francesi
+F|🇹🇬|Togo
+F|🇹🇭|Thailandia
+F|🇹🇯|Tagikistan
+F|🇹🇰|Tokelau
+F|🇹🇱|Timor Est
+F|🇹🇲|Turkmenistan
+F|🇹🇳|Tunisia
+F|🇹🇴|Tonga
+F|🇹🇷|Turchia
+F|🇹🇹|Trinidad e Tobago
+F|🇹🇻|Tuvalu
+F|🇹🇼|Taiwan
+F|🇹🇿|Tanzania
+F|🇺🇦|Ucraina
+F|🇺🇬|Uganda
+F|🇺🇲|Isole Minori Esterne degli Stati Uniti
+F|🇺🇳|Nazioni Unite
+F|🇺🇸|Stati Uniti
+F|🇺🇾|Uruguay
+F|🇺🇿|Uzbekistan
+F|🇻🇦|Città del Vaticano
+F|🇻🇨|Saint Vincent e Grenadine
+F|🇻🇪|Venezuela
+F|🇻🇬|Isole Vergini Britanniche
+F|🇻🇮|Isole Vergini Americane
+F|🇻🇳|Vietnam
+F|🇻🇺|Vanuatu
+F|🇼🇫|Wallis e Futuna
+F|🇼🇸|Samoa
+F|🇽🇰|Kosovo
+F|🇾🇪|Yemen
+F|🇾🇹|Mayotte
+F|🇿🇦|Sudafrica
+F|🇿🇲|Zambia
+F|🇿🇼|Zimbabwe
+F|🏴󠁧󠁢󠁥󠁮󠁧󠁿|Inghilterra
+F|🏴󠁧󠁢󠁳󠁣󠁴󠁿|Scozia
+F|🏴󠁧󠁢󠁷󠁬󠁳󠁿|Galles`;
+const FEM=/^(mano|radio|foto|moto|città|virtù)$/,MASA=/^(pianeta|panda|cinema|problema|sistema|programma|drago|cobra|koala|puma|lama)$/;
+function art(lab){const w=lab.split(" ")[0].toLowerCase(),f=FEM.test(w)||(/a$/.test(w)&&!MASA.test(w))||/(zione|tà|tù)$/.test(w),v=/^[aeiouàèéìòù]/.test(w);
+ if(f)return v?["l'"+lab,"un'"+lab]:["la "+lab,"una "+lab];
+ if(v)return["l'"+lab,"un "+lab];
+ if(/^(s[^aeiou]|z|gn|ps|x|y)/.test(w))return["lo "+lab,"uno "+lab];
+ return["il "+lab,"un "+lab]}
+const GEN=[],GW=new Map(),STOP=new Set("faccina faccia persona persone bandiera bandiere bandierina simbolo simboli segno pulsante quadrato cerchio rombo freccia mezzo uomo donna gruppo coppia bacio tasto lettera punto pezzo bambino volto segnale".split(" "));
+DATA.trim().split("\n").forEach(l=>{const[t,e,lab]=l.split("|"),n=norm(e);if(byN.has(n))return;
+ const o={t,e,n,lab,st:[]};
+ if(t==="P"||t==="O"){[o.def,o.ind]=art(lab);o.g=""}
+ else if(t==="L"){o.def=art(lab)[0];o.at="presso "+o.def}
+ else if(t==="F"){o.t="L";o.def=lab;o.at="in "+lab;o.fl=1}
+ else if(t==="V"){o.k="i";o.fm=["mostra l'espressione «"+lab+"»"];o.nul=""}
+ else o.ph=[t==="S"?"Passa il tempo: "+lab:"Nella scena compare "+art(lab)[1]];
+ byN.set(n,o);GEN.push(o);
+ const ws=lab.toLowerCase().split(/[^\p{L}]+/u).filter(Boolean),k=ws.length===1?ws[0]:o.fl||o.t==="V"?null:ws[0];
+ if(k&&k.length>3&&!STOP.has(k)&&!GW.has(k))GW.set(k,o)});
+const K=[...byN.keys()].sort((a,b)=>b.length-a.length);
+const gm=l=>{if(l.length<4)return;for(const k of[l,l.replace(/i$/,"o"),l.replace(/i$/,"e"),l.replace(/e$/,"a")]){const o=GW.get(k);if(o)return o}};
+function ps(){const q=$("pSrch").value.trim().toLowerCase(),r=$("pRes");r.innerHTML="";if(q.length<2)return;
+ [...A,...GEN].filter(e=>lb(e).toLowerCase().includes(q)).slice(0,60).forEach(e=>{const b=document.createElement("button");b.className="chip";b.textContent=e.e;b.title=lb(e);b.onclick=()=>ins(e.e);r.appendChild(b)})}
 
 function tok(line){const s=norm(line),t=[],b=[];let i=0;
  while(i<s.length){const k=K.find(k=>s.startsWith(k,i));
@@ -187,27 +2126,27 @@ function tok(line){const s=norm(line),t=[],b=[];let i=0;
   else{const c=String.fromCodePoint(s.codePointAt(i));if(/\S/.test(c)&&c!=='\u200D'&&!/[\p{L}\p{N}\p{P}]/u.test(c))b.push(c);i+=c.length}}
  return{t,b}}
 
+const SS=/^(il|lo|la|le|gli|un|uno|una|nel|nella|nello|nei|nelle|dal|dalla|alla|allo|al|del|della|dello|sul|sulla|con|per|tra|fra|fuori|dentro|poi|allora|intanto|dopo|prima|ora|adesso|presto|tardi|ancora|quando|mentre|dove|come|anche|ogni|tutto|tutti|qualcosa|qualcuno|nessuno|questo|questa|quel|quella|improvvisamente|comunque|infine|subito|ieri|oggi|domani|stasera|stamattina|sopra|sotto|davanti|dietro|accanto|all|dall|nell|sull)$/i;
 function enc(text){
  const nm={},last={},cnt={m:0,f:0},pool={m:['👨🏻','🧔'],f:['👩🏻','👵']},unk=new Set(),lines=[];
  const men=['luca','andrea','nicola','mattia','elia'];
  text.split(/[.!?;\n]+|,?\s+(?:ma|però|poi|quando|mentre)\s+/i).forEach(seg=>{
   if(!seg||!seg.trim())return;
   const w=seg.split(/[^\p{L}\p{N}]+/u).filter(Boolean),o=[];let neg=false;
+  const use=e=>{if(e.t==='N'){neg=true;return}if(e.t==='V'&&neg){o.push('❌');neg=false}o.push(e.e);if(e.t==='P'&&e.g)last[e.g]=e.e};
   w.forEach((x,i)=>{
    const l=x.toLowerCase();
    if(l==='lui'||l==='egli'){o.push(last.m||'👨🏻');return}
    if(l==='lei'||l==='ella'){o.push(last.f||'👩🏻');return}
-   const e=mt(l);
-   if(e){
-    if(e.t==='N'){neg=true;return}
-    if(e.t==='V'&&neg){o.push('❌');neg=false}
-    o.push(e.e);if(e.t==='P')last[e.g]=e.e;return}
+   const e=mt(l);if(e){use(e);return}
    if(/^\p{Lu}/u.test(x)&&x.length>2){
-    if(i>0&&/^(a|in|da|per|di|verso|nel|nella|nello|su|tra|fra)$/.test(w[i-1].toLowerCase())){o.push('📍');return}
+    if(i>0&&/^(a|in|da|per|di|verso|nel|nella|nello|su|tra|fra)$/.test(w[i-1].toLowerCase())){const g=gm(l);if(g)use(g);else o.push('📍');return}
     const n=w[i+1]&&mt(w[i+1].toLowerCase());
-    if(i>0||(n&&n.t==='V')){
+    const nx=w[i+1]||"";
+    if(i>0||(n&&n.t==='V')||(!SS.test(l)&&nx.length>=4&&/[aei]$/.test(nx)&&!/^(qualcosa|qualcuno|nessuno|niente|tutto|tutti|molto|poco|altro)$/i.test(nx))){
      if(!nm[l]){const g=men.includes(l)||!l.endsWith('a')?'m':'f';nm[l]={e:pool[g][Math.min(cnt[g]++,1)],g,n:x}}
      o.push(nm[l].e);last[nm[l].g]=nm[l].e;return}}
+   const g=gm(l);if(g){use(g);return}
    if(l.length>3&&!/^(alla|alle|allo|dalla|nella|della|dello|sono|come|dove|anche|quella|questo|questa|allora)$/.test(l))unk.add(l)});
   if(neg)o.push('❌');
   if(o.length)lines.push(o.join(''))});
@@ -249,12 +2188,12 @@ function dec(seq,mode){
     else if(k==='m')r.push(c.p?c.p.at:c.v.nul);
     else if(k==='w')r.push(c.p?'verso '+c.p.def:c.v.nul);
     if(c.p&&k!=='m'&&k!=='w')r.push(c.p.at);
-    const w=c.w||(k!=='t'&&c.o);
-    if(w){r.push('con '+(seen.has(w.e)?w.def:w.ind));seen.add(w.e)}
+    const wl=(k==='t'?[c.w]:[c.o,c.w]).filter(Boolean);
+    if(wl.length)r.push('con '+wl.map(w=>{const x=seen.has(w.e)?w.def:w.ind;seen.add(w.e);return x}).join(' e '));
     t=((car&&mode==='literary')?'':(s||'Qualcuno')+' ')+r.filter(Boolean).join(' ');
    }
    else if(c.neg)t=s?s+" non c'è":"Non c'è nulla";
-   else if(c.p)t=s?s+' si trova '+c.p.at:'La scena si svolge '+c.p.at;
+   else if(c.p){const wl=[c.o,c.w].filter(Boolean).map(w=>{const x=seen.has(w.e)?w.def:w.ind;seen.add(w.e);return x});t=(s?s+' si trova ':'La scena si svolge ')+c.p.at+(wl.length?' con '+wl.join(' e '):'')}
    else if(c.o||c.w){const o=c.o||c.w;t=s?s+' ha '+R(o):"C'è "+R(o)}
    else t=fresh?'Compare '+s:s+' è presente';
    if(n>0){
@@ -298,7 +2237,7 @@ function cp(id,b){const el=$(id),t=el.value!==undefined?el.value:el.textContent;
  if(navigator.clipboard)navigator.clipboard.writeText(t).then(ok,()=>{});
  else{const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();document.execCommand('copy');a.remove();ok()}}
 
-function lex(){const T={P:'Personaggi',L:'Luoghi',O:'Oggetti',V:'Azioni',M:'Atmosfera',S:'Svolte e stati',N:'Negazione'};
+function lex(){$('gNote').textContent="Lessico principale qui sotto. Le altre "+GEN.length+" emoji sono riconosciute per categoria: persone e animali sono personaggi; luoghi e bandiere sono luoghi; cibi, piante, oggetti, simboli e mezzi di trasporto sono oggetti; le faccine sono espressioni; gli orologi sono tempo; i fenomeni del cielo sono atmosfera. Nel testo una parola viene tradotta se coincide con il nome di un'emoji.";const T={P:'Personaggi',L:'Luoghi',O:'Oggetti',V:'Azioni',M:'Atmosfera',S:'Svolte e stati',N:'Negazione'};
  $('lex').innerHTML=Object.keys(T).map(t=>`<div class="lab">${T[t]}</div><div class="chips">${A.filter(e=>e.t===t&&e.e!=='📍').map(e=>`<span class="chip s">${e.e} ${esc(lb(e).replace(/^(l'|il |lo |la |un |una |uno )/,''))}</span>`).join('')}</div>`).join('')}
 pal();lex();rs();gen();
 </script>
