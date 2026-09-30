@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#111111">
+<title>Ideogrammi Narrativi</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f4f3ef;color:#171717;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+header{background:#111;color:#fff;padding:22px 18px 18px;position:sticky;top:0;z-index:10}
+h1{font-size:25px;margin:0 0 4px} .subtitle{opacity:.7;font-size:13px}
+main{max-width:850px;margin:auto;padding:18px}
+.view{display:none}.view.active{display:block}
+.menu{display:grid;gap:12px}
+.card{background:#fff;border:1px solid #ddd;border-radius:18px;padding:18px;box-shadow:0 2px 8px #00000008}
+.menu .card{cursor:pointer;transition:.15s}.menu .card:active{transform:scale(.98)}
+.icon{font-size:30px;float:left;margin-right:13px}.card h2{font-size:18px;margin:2px 0 5px}.card p{margin:0;color:#666;font-size:14px;line-height:1.4}
+.topbar{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+button{border:0;border-radius:12px;padding:11px 14px;background:#111;color:white;font-size:15px;cursor:pointer}
+button.secondary{background:#e6e4df;color:#111}.back{background:transparent;color:#111;padding:5px 0;font-size:16px}
+textarea,input,select{width:100%;border:1px solid #ccc;border-radius:12px;background:white;padding:13px;font:inherit}
+textarea{min-height:145px;resize:vertical}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.result{white-space:pre-wrap;line-height:1.65;font-size:18px;background:#fff;border:1px solid #ddd;border-radius:15px;padding:18px;min-height:90px}
+.emojiResult{font-size:38px;line-height:1.5;letter-spacing:3px}
+.label{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:#777;margin:18px 0 7px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{background:#fff;border:1px solid #ddd;border-radius:20px;padding:7px 10px;font-size:14px}
+.story{font-size:17px;line-height:1.7}
+.small{font-size:13px;color:#666}
+.sequence{font-size:40px;line-height:1.5;background:#fff;border-radius:15px;padding:15px;word-break:break-word}
+.legend{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:8px}
+.legend .card{padding:11px}
+footer{padding:30px 0;color:#888;text-align:center;font-size:12px}
+</style>
+</head>
+<body>
+<header>
+  <h1>🧩 Ideogrammi Narrativi</h1>
+  <div class="subtitle">Scrivere storie usando le emoji come ideogrammi</div>
+</header>
+
+<main>
+<section id="home" class="view active">
+  <div class="card" style="margin-bottom:15px">
+    <strong>Un laboratorio di scrittura, non un semplice traduttore.</strong>
+    <p style="margin-top:6px">Le emoji rappresentano personaggi, azioni, luoghi, desideri, ostacoli, svolte e conseguenze.</p>
+  </div>
+  <div class="menu">
+    <div class="card" onclick="show('textEmoji')"><div class="icon">📝</div><h2>Testo → Emoji</h2><p>Trasforma una storia in una sequenza di ideogrammi narrativi.</p></div>
+    <div class="card" onclick="show('emojiText')"><div class="icon">🔤</div><h2>Emoji → Testo</h2><p>Ricostruisci una storia italiana a partire dagli ideogrammi.</p></div>
+    <div class="card" onclick="show('generate')"><div class="icon">🎲</div><h2>Emoji → Storia</h2><p>Genera una sequenza e usala come traccia per scrivere.</p></div>
+    <div class="card" onclick="show('chain')"><div class="icon">🔄</div><h2>Telefono senza fili</h2><p>Testo → Emoji → nuovo testo → nuove emoji, per trasformare progressivamente la storia.</p></div>
+    <div class="card" onclick="show('write')"><div class="icon">✍️</div><h2>Scrittura da emoji</h2><p>Scrivi una storia guidata dalla grammatica narrativa.</p></div>
+    <div class="card" onclick="show('grammar')"><div class="icon">🧩</div><h2>Grammatica narrativa</h2><p>Consulta il vocabolario delle funzioni narrative.</p></div>
+  </div>
+</section>
+
+<section id="textEmoji" class="view">
+  <div class="topbar"><button class="back" onclick="show('home')">← Menu</button></div>
+  <h2>📝 Testo → Emoji</h2>
+  <p class="small">Il testo viene ridotto a nuclei narrativi: personaggi, azioni, luoghi, oggetti, desideri, ostacoli e svolte.</p>
+  <textarea id="teInput" placeholder="Es.: Marco arriva alla stazione e cerca Anna, ma lei non c'è. Comincia a piovere. Marco trova una chiave e torna a casa."></textarea>
+  <div class="actions"><button onclick="textToEmoji()">Traduci</button><button class="secondary" onclick="sampleText()">Esempio</button><button class="secondary" onclick="copyText('teOutput')">Copia</button></div>
+  <div id="teOutput" class="result emojiResult">La sequenza apparirà qui.</div>
+  <div class="label">Struttura riconosciuta</div>
+  <div id="teStructure" class="result small"></div>
+</section>
+
+<section id="emojiText" class="view">
+  <div class="topbar"><button class="back" onclick="show('home')">← Menu</button></div>
+  <h2>🔤 Emoji → Testo</h2>
+  <p class="small">Inserisci una sequenza. Puoi usare anche frecce, negazioni e simboli narrativi.</p>
+  <textarea id="etInput" class="emojiResult" placeholder="👨🏻🚉🔎👩🏻❌🌧️🔑↩️🏠"></textarea>
+  <div class="row">
+    <select id="etMode"><option value="narrative">Narrativa</option><option value="literal">Letterale</option><option value="literary">Letteraria</option></select>
+    <select id="etLength"><option value="short">Breve</option><option value="medium" selected>Media</option><option value="long">Ampia</option></select>
+  </div>
+  <div class="actions"><button onclick="emojiToText()">Ricostruisci</button><button class="secondary" onclick="copyText('etOutput')">Copia</button></div>
+  <div id="etOutput" class="result story">La storia apparirà qui.</div>
+</section>
+
+<section id="generate" class="view">
+  <div class="topbar"><button class="back" onclick="show('home')">← Menu</button></div>
+  <h2>🎲 Emoji → Storia</h2>
+  <p class="small">Genera una traccia narrativa casuale. Puoi rigenerarla fino a trovare una combinazione interessante.</p>
+  <div class="row">
+    <select id="genTone"><option>realistico</option><option>surreale</option><option>misterioso</option><option>comico</option></select>
+    <select id="genSize"><option value="6">6 ideogrammi</option><option value="9" selected>9 ideogrammi</option><option value="12">12 ideogrammi</option></select>
+  </div>
+  <div class="actions"><button onclick="generateSequence()">Genera</button><button class="secondary" onclick="decodeGenerated()">Decodifica</button></div>
+  <div id="genSequence" class="sequence">🎲</div>
+  <div class="label">Traccia narrativa</div>
+  <div id="genStory" class="result story">Genera una sequenza.</div>
+</section>
+
+<section id="chain" class="view">
+  <div class="topbar"><button class="back" onclick="show('home')">← Menu</button></div>
+  <h2>🔄 Telefono senza fili</h2>
+  <p class="small">Ogni passaggio ricostruisce la storia dagli ideogrammi precedenti. Il risultato può quindi divergere dall'originale.</p>
+  <textarea id="chainInput" placeholder="Scrivi una storia di 2-5 frasi..."></textarea>
+  <div class="actions"><button onclick="chainStart()">Avvia catena</button><button class="secondary" onclick="chainNext()">Continua trasformazione</button></div>
+  <div id="chainSteps"></div>
+</section>
+
+<section id="write" class="view">
+  <div class="topbar"><button class="back" onclick="show('home')">← Menu</button></div>
+  <h2>✍️ Scrittura da emoji</h2>
+  <p class="small">Scegli una sequenza o generane una. Scrivi la storia seguendo le funzioni indicate, senza dover tradurre ogni emoji letteralmente.</p>
+  <div id="writeSequence" class="sequence">👤➡️📍❓❤️🔒⚡↩️</div>
+  <div class="actions"><button onclick="generateWritingPrompt()">Nuova sequenza</button></div>
+  <div id="writeGuide" class="card"></div>
+  <div class="label">La tua storia</div>
+  <textarea id="writeText" style="min-height:230px" placeholder="Scrivi qui..."></textarea>
+  <div class="actions"><button onclick="saveWriting()">Salva nel dispositivo</button><button class="secondary" onclick="copyText('writeText')">Copia</button></div>
+</section>
+
+<section id="grammar" class="view">
+  <div class="topbar"><button class="back" onclick="show('home')">← Menu</button></div>
+  <h2>🧩 Grammatica narrativa</h2>
+  <p class="small">Il significato delle emoji non è fisso: dipende dalla posizione nella sequenza e dalle relazioni con gli altri segni.</p>
+  <div class="legend" id="legend"></div>
+</section>
+<footer>Ideogrammi Narrativi · laboratorio locale · nessun testo viene inviato a un server</footer>
+</main>
+
+<script>
+const vocab = {
+  "👤":"personaggio","👨":"uomo","👩":"donna","👨🏻":"uomo","👩🏻":"donna","👨🏻‍🦱":"uomo","👩🏻‍🦰":"donna",
+  "👦":"ragazzo","👧":"ragazza","🐕":"cane","🐈":"gatto","🏠":"casa","🏢":"edificio","🚉":"stazione","🏫":"scuola",
+  "🌳":"parco","🌆":"città","🌊":"mare","🚗":"auto","🚌":"autobus","🚂":"treno","✈️":"aereo",
+  "🎒":"zaino","📦":"scatola","🔑":"chiave","📱":"telefono","💌":"lettera","📖":"libro","🎁":"regalo",
+  "🚶":"cammina","🏃":"corre","➡️":"va verso","⬅️":"torna verso","↩️":"torna","👀":"cerca/vede","🔎":"cerca",
+  "🗣️":"parla","📞":"chiama","💭":"pensa","🧠":"ricorda","❤️":"desidera/ama","🤝":"incontra",
+  "🚪":"porta","🔒":"chiuso/impedimento","🔓":"aperto","❌":"non trova/fallisce","❓":"domanda",
+  "⚡":"svolta","💥":"evento improvviso","🔁":"ripete","⏳":"passa il tempo","⏰":"tempo/scadenza",
+  "🌧️":"piove","☀️":"sole","🌙":"notte","🔥":"fuoco","🌬️":"vento","🌊":"acqua/mare",
+  "😢":"piange","😂":"ride","😨":"ha paura","😡":"si arrabbia","🤫":"tace","😴":"dorme",
+  "🍎":"mela","☕":"caffè","🍞":"pane","💰":"denaro","🎈":"festa","🕯️":"candela",
+  "⭐":"segno importante","🌀":"confusione","🎭":"identità/finzione","🪞":"riflessione","🧩":"problema",
+  "➡":"conseguenza/direzione","↔️":"scambio","🔀":"alternativa","➕":"aggiunta","➖":"sottrazione",
+  "📍":"luogo","🕰️":"tempo","🗝️":"chiave","🌧":"pioggia","🏡":"casa"
+};
+
+const functions = [
+["👤","Soggetto","chi agisce o viene seguito dalla storia"],
+["🚶","Azione","movimento o cambiamento"],
+["📍","Luogo","dove avviene qualcosa"],
+["⏳","Tempo","quando o per quanto tempo"],
+["❤️","Desiderio","ciò che il personaggio vuole"],
+["👀","Percezione","cerca, vede, scopre"],
+["🗣️","Comunicazione","dice, chiede, racconta"],
+["❌","Fallimento","qualcosa non accade come previsto"],
+["🔒","Ostacolo","ciò che impedisce l'azione"],
+["❓","Problema","domanda o situazione da risolvere"],
+["⚡","Svolta","cambiamento improvviso della direzione"],
+["💥","Evento","qualcosa irrompe nella storia"],
+["➡️","Conseguenza","un evento produce un altro evento"],
+["↩️","Ritorno","il personaggio torna a un punto precedente"],
+["🔁","Ripetizione","un'azione o situazione ritorna"],
+["🔀","Alternativa","la storia apre due possibilità"],
+["🔑","Oggetto","elemento concreto con funzione narrativa"],
+["🪞","Riflessione","il personaggio guarda a sé o al proprio passato"]
+];
+
+const pools = {
+  person:["👨🏻","👩🏻","👦","👧","👤"],
+  place:["🏠","🚉","🏫","🌳","🌆","🌊"],
+  action:["🚶","🏃","➡️","👀","🗣️","📞"],
+  object:["🔑","📦","🎒","📱","💌","📖","🎁"],
+  desire:["❤️","🔎","💭","🧠"],
+  obstacle:["🔒","❌","🌧️","😨","🌀"],
+  turn:["⚡","💥","🔀","↩️"],
+  ending:["🏠","☀️","🌙","🔓","❤️","❓"]
+};
+
+function show(id){
+ document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+ document.getElementById(id).classList.add('active');
+ window.scrollTo(0,0);
+}
+
+function sampleText(){
+ document.getElementById('teInput').value="Marco arriva alla stazione e cerca Anna, ma lei non c'è. Comincia a piovere. Marco trova una chiave e torna a casa.";
+}
+
+function tokenizeEmoji(s){
+ const known=Object.keys(vocab).sort((a,b)=>b.length-a.length);
+ let out=[], i=0;
+ while(i<s.length){
+   let found=null;
+   for(const e of known){ if(s.startsWith(e,i)){found=e;break;} }
+   if(found){out.push(found);i+=found.length;}
+   else i++;
+ }
+ return out;
+}
+
+function pick(arr){return arr[Math.floor(Math.random()*arr.length)]}
+
+function textToEmoji(){
+ const t=document.getElementById('teInput').value.trim();
+ if(!t){document.getElementById('teOutput').textContent="Inserisci un testo.";return}
+ const low=t.toLowerCase();
+ let out=[];
+ if(/uomo|marco|lui|ragazzo|padre/.test(low)) out.push("👨🏻");
+ else if(/donna|anna|lei|ragazza|madre/.test(low)) out.push("👩🏻");
+ else out.push("👤");
+ if(/stazione|treno/.test(low)) out.push("🚉");
+ else if(/casa/.test(low)) out.push("🏠");
+ else if(/scuola/.test(low)) out.push("🏫");
+ else if(/mare/.test(low)) out.push("🌊");
+ if(/cerca|cercare|cercò|cercava/.test(low)) out.push("🔎");
+ if(/vede|vide|vedere|guarda/.test(low)) out.push("👀");
+ if(/incontra|incontrò|incontrare/.test(low)) out.push("🤝");
+ if(/ama|amore|vuole|desidera/.test(low)) out.push("❤️");
+ if(/chiama|telefon/.test(low)) out.push("📞");
+ if(/parla|dice|disse/.test(low)) out.push("🗣️");
+ if(/chiave/.test(low)) out.push("🔑");
+ if(/scatola|pacchetto/.test(low)) out.push("📦");
+ if(/zaino/.test(low)) out.push("🎒");
+ if(/libro/.test(low)) out.push("📖");
+ if(/piove|pioggia/.test(low)) out.push("🌧️");
+ if(/corre|scappa/.test(low)) out.push("🏃");
+ if(/torna|tornò|ritorna/.test(low)) out.push("↩️");
+ if(/non c'è|non trova|nessuno|mai|fallisce|manca/.test(low)) out.push("❌");
+ if(/chiuso|porta chiusa|imped/.test(low)) out.push("🔒");
+ if(/improvvis|all'improvviso|svolta|scopre|scoperto/.test(low)) out.push("⚡");
+ if(/notte/.test(low)) out.push("🌙");
+ if(/sole|mattina/.test(low)) out.push("☀️");
+ if(out.length<3) out.push("➡️");
+ document.getElementById('teOutput').textContent=out.join("");
+ const labels=out.map(e=>e+" = "+(vocab[e]||"segno narrativo"));
+ document.getElementById('teStructure').textContent=labels.join("\n");
+}
+
+function emojiToText(){
+ const raw=document.getElementById('etInput').value.trim();
+ const arr=tokenizeEmoji(raw);
+ if(!arr.length){document.getElementById('etOutput').textContent="Non riconosco una sequenza di emoji.";return}
+ const mode=document.getElementById('etMode').value;
+ const has=(e)=>arr.includes(e);
+ let subject="Un personaggio";
+ if(arr.some(e=>["👨","👨🏻","👨🏻‍🦱"].includes(e)))subject="Un uomo";
+ if(arr.some(e=>["👩","👩🏻","👩🏻‍🦰"].includes(e)))subject="Una donna";
+ let place=arr.includes("🚉")?"alla stazione":arr.includes("🏠")?"a casa":arr.includes("🏫")?"a scuola":arr.includes("🌊")?"al mare":"in un luogo non precisato";
+ let s=[];
+ if(mode==="literal"){
+   document.getElementById('etOutput').textContent=arr.map(e=>vocab[e]||e).join(" · ");
+   return;
+ }
+ s.push(subject+" si trova "+place+".");
+ if(has("🔎")||has("👀")) s.push(subject+" cerca qualcosa o qualcuno.");
+ if(has("❤️")) s.push("Ha un desiderio che orienta le sue azioni.");
+ if(has("🤝")) s.push("A un certo punto incontra qualcuno.");
+ if(has("🗣️")) s.push("I due parlano.");
+ if(has("📞")) s.push(subject+" prova a comunicare con qualcuno.");
+ if(has("🔑")) s.push("Compare una chiave, che assume un'importanza nella vicenda.");
+ if(has("📦")) s.push("C'è una scatola da portare, aprire o consegnare.");
+ if(has("🎒")) s.push("Con sé ha uno zaino.");
+ if(has("❌")) s.push("La ricerca però fallisce: ciò che cerca non si trova.");
+ if(has("🔒")) s.push("Un ostacolo blocca il suo tentativo.");
+ if(has("🌧️")) s.push("Comincia a piovere.");
+ if(has("⚡")||has("💥")) s.push("Un evento improvviso cambia la direzione della storia.");
+ if(has("↩️")) s.push(subject+" torna indietro, verso un luogo già attraversato.");
+ if(has("🔀")) s.push("A questo punto si apre un'alternativa.");
+ if(has("☀️")) s.push("La situazione si chiarisce.");
+ if(has("🌙")) s.push("La scena si sposta nella notte.");
+ if(has("🔓")) s.push("L'ostacolo viene superato.");
+ if(has("❓")) s.push("Rimane una domanda.");
+ let out=s.join(" ");
+ if(mode==="literary") out=out.replace("Un personaggio","Qualcuno").replace("Un uomo","L'uomo").replace("Una donna","La donna");
+ if(document.getElementById('etLength').value==="short") out=s.slice(0,3).join(" ");
+ if(document.getElementById('etLength').value==="long") out += " La sequenza non stabilisce tutto: alcuni elementi restano volutamente aperti e possono essere interpretati durante la scrittura.";
+ document.getElementById('etOutput').textContent=out;
+}
+
+function generateSequence(){
+ const n=+document.getElementById('genSize').value;
+ const arr=[
+  pick(pools.person),pick(pools.place),pick(pools.action),
+  pick(pools.desire),pick(pools.object),pick(pools.obstacle),
+  pick(pools.turn),pick(pools.action),pick(pools.ending),
+  pick(pools.object),pick(pools.obstacle),pick(pools.ending)
+ ].slice(0,n);
+ document.getElementById('genSequence').textContent=arr.join("");
+ document.getElementById('genStory').textContent=decodeForPrompt(arr);
+}
+
+function decodeForPrompt(arr){
+ const subject=arr[0]==="👩🏻"?"una donna":arr[0]==="👨🏻"?"un uomo":"un personaggio";
+ let lines=[];
+ lines.push("Soggetto: "+subject+".");
+ lines.push("Luogo: "+(vocab[arr[1]]||"luogo non definito")+".");
+ lines.push("Desiderio/azione iniziale: "+(vocab[arr[2]]||"azione")+".");
+ lines.push("Motore narrativo: "+(vocab[arr[3]]||"desiderio")+".");
+ if(arr[4]) lines.push("Oggetto: "+(vocab[arr[4]]||"oggetto")+".");
+ if(arr[5]) lines.push("Ostacolo: "+(vocab[arr[5]]||"ostacolo")+".");
+ if(arr[6]) lines.push("Svolta: "+(vocab[arr[6]]||"svolta")+".");
+ if(arr[7]) lines.push("Seconda azione: "+(vocab[arr[7]]||"azione")+".");
+ if(arr[8]) lines.push("Esito aperto: "+(vocab[arr[8]]||"finale")+".");
+ return lines.join(" ");
+}
+function decodeGenerated(){emojiToText()}
+
+let chain=[];
+function chainStart(){
+ const t=document.getElementById('chainInput').value.trim();
+ if(!t)return;
+ chain=[{type:"Testo originale",value:t}];
+ const fake=document.getElementById('teInput'); fake.value=t; textToEmoji();
+ chain.push({type:"Emoji",value:document.getElementById('teOutput').textContent});
+ renderChain();
+}
+function chainNext(){
+ if(!chain.length)return;
+ const last=chain[chain.length-1];
+ if(last.type==="Emoji"){
+   document.getElementById('etInput').value=last.value; emojiToText();
+   chain.push({type:"Nuovo testo",value:document.getElementById('etOutput').textContent});
+ }else{
+   document.getElementById('teInput').value=last.value; textToEmoji();
+   chain.push({type:"Nuove emoji",value:document.getElementById('teOutput').textContent});
+ }
+ renderChain();
+}
+function renderChain(){
+ document.getElementById('chainSteps').innerHTML=chain.map((x,i)=>`<div class="card" style="margin-top:10px"><div class="label">Passaggio ${i+1} · ${x.type}</div><div class="${x.type.toLowerCase().includes('emoji')?'emojiResult':'story'}">${escapeHTML(x.value)}</div></div>`).join("");
+}
+function escapeHTML(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+
+function generateWritingPrompt(){
+ const arr=[pick(pools.person),pick(pools.place),pick(pools.action),pick(pools.desire),pick(pools.obstacle),pick(pools.turn),pick(pools.object),pick(pools.action),pick(pools.ending)];
+ document.getElementById('writeSequence').textContent=arr.join("");
+ const guide=arr.map((e,i)=>`<div style="margin:6px 0"><b>${i+1}. ${e}</b> · ${vocab[e]||"segno narrativo"}</div>`).join("");
+ document.getElementById('writeGuide').innerHTML=guide;
+}
+function saveWriting(){
+ const t=document.getElementById('writeText').value;
+ if(!t)return;
+ localStorage.setItem("ideogrammi_saved",t);
+ alert("Testo salvato nel dispositivo.");
+}
+function copyText(id){
+ const el=document.getElementById(id);
+ navigator.clipboard?.writeText(el.value!==undefined?el.value:el.textContent).then(()=>alert("Copiato."));
+}
+
+function initLegend(){
+ document.getElementById('legend').innerHTML=functions.map(x=>`<div class="card"><div style="font-size:26px">${x[0]}</div><b>${x[1]}</b><div class="small">${x[2]}</div></div>`).join("");
+}
+initLegend();
+generateWritingPrompt();
+</script>
+</body>
+</html>
