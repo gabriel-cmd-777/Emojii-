@@ -2,357 +2,305 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#111111">
 <title>Ideogrammi Narrativi</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f4f3ef;color:#171717;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-header{background:#111;color:#fff;padding:22px 18px 18px;position:sticky;top:0;z-index:10}
-h1{font-size:25px;margin:0 0 4px} .subtitle{opacity:.7;font-size:13px}
+header{background:#111;color:#fff;padding:20px 18px 16px}
+h1{font-size:24px;margin:0 0 4px}.sub{opacity:.7;font-size:13px}
 main{max-width:850px;margin:auto;padding:18px}
 .view{display:none}.view.active{display:block}
 .menu{display:grid;gap:12px}
-.card{background:#fff;border:1px solid #ddd;border-radius:18px;padding:18px;box-shadow:0 2px 8px #00000008}
-.menu .card{cursor:pointer;transition:.15s}.menu .card:active{transform:scale(.98)}
-.icon{font-size:30px;float:left;margin-right:13px}.card h2{font-size:18px;margin:2px 0 5px}.card p{margin:0;color:#666;font-size:14px;line-height:1.4}
-.topbar{display:flex;align-items:center;gap:10px;margin-bottom:14px}
-button{border:0;border-radius:12px;padding:11px 14px;background:#111;color:white;font-size:15px;cursor:pointer}
-button.secondary{background:#e6e4df;color:#111}.back{background:transparent;color:#111;padding:5px 0;font-size:16px}
-textarea,input,select{width:100%;border:1px solid #ccc;border-radius:12px;background:white;padding:13px;font:inherit}
-textarea{min-height:145px;resize:vertical}
-.actions{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
-.result{white-space:pre-wrap;line-height:1.65;font-size:18px;background:#fff;border:1px solid #ddd;border-radius:15px;padding:18px;min-height:90px}
-.emojiResult{font-size:38px;line-height:1.5;letter-spacing:3px}
-.label{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:#777;margin:18px 0 7px}
+.card{background:#fff;border:1px solid #ddd;border-radius:16px;padding:16px}
+.menu .card{cursor:pointer}.menu .card:active{transform:scale(.98)}
+.ic{font-size:28px;float:left;margin-right:12px}.card h2{font-size:17px;margin:2px 0 4px}.card p{margin:0;color:#666;font-size:14px;line-height:1.4}
+button{border:0;border-radius:12px;padding:11px 14px;background:#111;color:#fff;font-size:15px;cursor:pointer}
+button.secondary{background:#e6e4df;color:#111}.back{background:transparent;color:#111;padding:5px 0;margin-bottom:8px}
+textarea,select{width:100%;border:1px solid #ccc;border-radius:12px;background:#fff;padding:13px;font:inherit}
+textarea{min-height:130px;resize:vertical}
+.act{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.res{white-space:pre-wrap;line-height:1.6;font-size:17px;background:#fff;border:1px solid #ddd;border-radius:14px;padding:16px;min-height:70px}
+.em{font-size:34px;line-height:1.5;letter-spacing:2px}
+.lab{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:#777;margin:16px 0 6px}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.chips{display:flex;flex-wrap:wrap;gap:7px}
-.chip{background:#fff;border:1px solid #ddd;border-radius:20px;padding:7px 10px;font-size:14px}
-.story{font-size:17px;line-height:1.7}
-.small{font-size:13px;color:#666}
-.sequence{font-size:40px;line-height:1.5;background:#fff;border-radius:15px;padding:15px;word-break:break-word}
-.legend{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:8px}
-.legend .card{padding:11px}
-footer{padding:30px 0;color:#888;text-align:center;font-size:12px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.chip{background:#fff;border:1px solid #ddd;border-radius:18px;padding:5px 9px;font-size:22px;color:#111}
+.chip.s{font-size:13px;padding:7px 10px}
+.small{font-size:13px;color:#666;line-height:1.5}
+footer{padding:26px 0;color:#888;text-align:center;font-size:12px}
 </style>
 </head>
 <body>
-<header>
-  <h1>🧩 Ideogrammi Narrativi</h1>
-  <div class="subtitle">Scrivere storie usando le emoji come ideogrammi</div>
-</header>
-
+<header><h1>🧩 Ideogrammi Narrativi</h1><div class="sub">Storie scritte con le emoji come ideogrammi</div></header>
 <main>
-<section id="home" class="view active">
-  <div class="card" style="margin-bottom:15px">
-    <strong>Un laboratorio di scrittura, non un semplice traduttore.</strong>
-    <p style="margin-top:6px">Le emoji rappresentano personaggi, azioni, luoghi, desideri, ostacoli, svolte e conseguenze.</p>
-  </div>
-  <div class="menu">
-    <div class="card" onclick="show('textEmoji')"><div class="icon">📝</div><h2>Testo → Emoji</h2><p>Trasforma una storia in una sequenza di ideogrammi narrativi.</p></div>
-    <div class="card" onclick="show('emojiText')"><div class="icon">🔤</div><h2>Emoji → Testo</h2><p>Ricostruisci una storia italiana a partire dagli ideogrammi.</p></div>
-    <div class="card" onclick="show('generate')"><div class="icon">🎲</div><h2>Emoji → Storia</h2><p>Genera una sequenza e usala come traccia per scrivere.</p></div>
-    <div class="card" onclick="show('chain')"><div class="icon">🔄</div><h2>Telefono senza fili</h2><p>Testo → Emoji → nuovo testo → nuove emoji, per trasformare progressivamente la storia.</p></div>
-    <div class="card" onclick="show('write')"><div class="icon">✍️</div><h2>Scrittura da emoji</h2><p>Scrivi una storia guidata dalla grammatica narrativa.</p></div>
-    <div class="card" onclick="show('grammar')"><div class="icon">🧩</div><h2>Grammatica narrativa</h2><p>Consulta il vocabolario delle funzioni narrative.</p></div>
-  </div>
+
+<section id="home" class="view active"><div class="menu">
+<div class="card" onclick="show('te')"><div class="ic">📝</div><h2>Testo → Emoji</h2><p>Ogni frase diventa una riga. L'ordine della storia resta.</p></div>
+<div class="card" onclick="show('et')"><div class="ic">🔤</div><h2>Emoji → Testo</h2><p>Legge la sequenza in ordine e la ricostruisce in italiano.</p></div>
+<div class="card" onclick="show('gn')"><div class="ic">🎲</div><h2>Genera e scrivi</h2><p>Una traccia di emoji da trasformare nella tua storia.</p></div>
+<div class="card" onclick="show('ch')"><div class="ic">🔄</div><h2>Telefono senza fili</h2><p>Testo → emoji → testo → emoji. La storia deriva a ogni passaggio.</p></div>
+<div class="card" onclick="show('gr')"><div class="ic">📖</div><h2>Grammatica</h2><p>Lessico e regole di lettura.</p></div>
+</div></section>
+
+<section id="te" class="view">
+<button class="back" onclick="show('home')">← Menu</button>
+<h2>📝 Testo → Emoji</h2>
+<textarea id="tIn" placeholder="Marco arriva alla stazione e cerca Anna, ma lei non c'è. Comincia a piovere."></textarea>
+<div class="act"><button onclick="te()">Traduci</button><button class="secondary" onclick="smp()">Esempio</button><button class="secondary" onclick="cp('tOut',this)">Copia</button></div>
+<div id="tOut" class="res em">La sequenza apparirà qui.</div>
+<div class="lab">Lettura riga per riga</div><div id="tSt" class="res small"></div>
+<div class="lab">Note</div><div id="tNote" class="res small" style="min-height:0"></div>
 </section>
 
-<section id="textEmoji" class="view">
-  <div class="topbar"><button class="back" onclick="show('home')">← Menu</button></div>
-  <h2>📝 Testo → Emoji</h2>
-  <p class="small">Il testo viene ridotto a nuclei narrativi: personaggi, azioni, luoghi, oggetti, desideri, ostacoli e svolte.</p>
-  <textarea id="teInput" placeholder="Es.: Marco arriva alla stazione e cerca Anna, ma lei non c'è. Comincia a piovere. Marco trova una chiave e torna a casa."></textarea>
-  <div class="actions"><button onclick="textToEmoji()">Traduci</button><button class="secondary" onclick="sampleText()">Esempio</button><button class="secondary" onclick="copyText('teOutput')">Copia</button></div>
-  <div id="teOutput" class="result emojiResult">La sequenza apparirà qui.</div>
-  <div class="label">Struttura riconosciuta</div>
-  <div id="teStructure" class="result small"></div>
+<section id="et" class="view">
+<button class="back" onclick="show('home')">← Menu</button>
+<h2>🔤 Emoji → Testo</h2>
+<p class="small">Una riga è una scena. Tocca le emoji per comporre oppure incolla una sequenza.</p>
+<textarea id="eIn" class="em" placeholder="👨🏻➡️🚉🔎👩🏻"></textarea>
+<div id="pal" class="chips"></div>
+<select id="eMode"><option value="narrative">Narrativa</option><option value="literal">Letterale</option><option value="literary">Letteraria (varia a ogni lettura)</option></select>
+<div class="act"><button onclick="et()">Ricostruisci</button><button class="secondary" onclick="cp('eOut',this)">Copia</button></div>
+<div id="eOut" class="res">La storia apparirà qui.</div>
+<div id="eNote" class="small" style="margin-top:8px"></div>
 </section>
 
-<section id="emojiText" class="view">
-  <div class="topbar"><button class="back" onclick="show('home')">← Menu</button></div>
-  <h2>🔤 Emoji → Testo</h2>
-  <p class="small">Inserisci una sequenza. Puoi usare anche frecce, negazioni e simboli narrativi.</p>
-  <textarea id="etInput" class="emojiResult" placeholder="👨🏻🚉🔎👩🏻❌🌧️🔑↩️🏠"></textarea>
-  <div class="row">
-    <select id="etMode"><option value="narrative">Narrativa</option><option value="literal">Letterale</option><option value="literary">Letteraria</option></select>
-    <select id="etLength"><option value="short">Breve</option><option value="medium" selected>Media</option><option value="long">Ampia</option></select>
-  </div>
-  <div class="actions"><button onclick="emojiToText()">Ricostruisci</button><button class="secondary" onclick="copyText('etOutput')">Copia</button></div>
-  <div id="etOutput" class="result story">La storia apparirà qui.</div>
+<section id="gn" class="view">
+<button class="back" onclick="show('home')">← Menu</button>
+<h2>🎲 Genera e scrivi</h2>
+<p class="small">La traccia ha una struttura: arrivo, ricerca, fallimento, atmosfera, svolta, ritorno. Scrivi la tua versione senza tradurre emoji per emoji.</p>
+<select id="gN"><option value="3">3 scene</option><option value="4">4 scene</option><option value="6" selected>6 scene</option></select>
+<div class="act"><button onclick="gen()">Nuova traccia</button><button class="secondary" onclick="$('gTr').textContent=dec($('gSeq').textContent,'narrative').t">Mostra lettura</button></div>
+<div id="gSeq" class="res em"></div>
+<div id="gTr" class="res small" style="margin-top:8px;min-height:0"></div>
+<div class="lab">La tua storia</div>
+<textarea id="wText" style="min-height:200px" placeholder="Scrivi qui..."></textarea>
+<div class="act"><button onclick="sv()">Salva nel dispositivo</button><button class="secondary" onclick="cp('wText',this)">Copia</button></div>
+<div id="saved"></div>
 </section>
 
-<section id="generate" class="view">
-  <div class="topbar"><button class="back" onclick="show('home')">← Menu</button></div>
-  <h2>🎲 Emoji → Storia</h2>
-  <p class="small">Genera una traccia narrativa casuale. Puoi rigenerarla fino a trovare una combinazione interessante.</p>
-  <div class="row">
-    <select id="genTone"><option>realistico</option><option>surreale</option><option>misterioso</option><option>comico</option></select>
-    <select id="genSize"><option value="6">6 ideogrammi</option><option value="9" selected>9 ideogrammi</option><option value="12">12 ideogrammi</option></select>
-  </div>
-  <div class="actions"><button onclick="generateSequence()">Genera</button><button class="secondary" onclick="decodeGenerated()">Decodifica</button></div>
-  <div id="genSequence" class="sequence">🎲</div>
-  <div class="label">Traccia narrativa</div>
-  <div id="genStory" class="result story">Genera una sequenza.</div>
+<section id="ch" class="view">
+<button class="back" onclick="show('home')">← Menu</button>
+<h2>🔄 Telefono senza fili</h2>
+<p class="small">Ogni passaggio legge solo il precedente. Dettagli senza ideogramma vanno persi e la lettura letteraria sceglie sinonimi diversi.</p>
+<textarea id="cIn" placeholder="Scrivi una storia di 2-5 frasi..."></textarea>
+<div class="act"><button onclick="chS()">Avvia</button><button class="secondary" onclick="chN()">Altri due passaggi</button></div>
+<div id="cSt"></div>
 </section>
 
-<section id="chain" class="view">
-  <div class="topbar"><button class="back" onclick="show('home')">← Menu</button></div>
-  <h2>🔄 Telefono senza fili</h2>
-  <p class="small">Ogni passaggio ricostruisce la storia dagli ideogrammi precedenti. Il risultato può quindi divergere dall'originale.</p>
-  <textarea id="chainInput" placeholder="Scrivi una storia di 2-5 frasi..."></textarea>
-  <div class="actions"><button onclick="chainStart()">Avvia catena</button><button class="secondary" onclick="chainNext()">Continua trasformazione</button></div>
-  <div id="chainSteps"></div>
+<section id="gr" class="view">
+<button class="back" onclick="show('home')">← Menu</button>
+<h2>📖 Grammatica</h2>
+<div class="card small" style="margin-bottom:12px">Una riga è una scena. Nella riga l'ordine conta: soggetto, azione, oggetto, luogo. ❌ nega l'azione che segue oppure l'elemento se manca l'azione. ➡️ e ↩️ sono movimento verso un luogo e ritorno. Un nuovo soggetto dopo un'azione apre una nuova frase. Senza soggetto continua il precedente. Atmosfera e svolte occupano una frase propria.</div>
+<div id="lex"></div>
 </section>
 
-<section id="write" class="view">
-  <div class="topbar"><button class="back" onclick="show('home')">← Menu</button></div>
-  <h2>✍️ Scrittura da emoji</h2>
-  <p class="small">Scegli una sequenza o generane una. Scrivi la storia seguendo le funzioni indicate, senza dover tradurre ogni emoji letteralmente.</p>
-  <div id="writeSequence" class="sequence">👤➡️📍❓❤️🔒⚡↩️</div>
-  <div class="actions"><button onclick="generateWritingPrompt()">Nuova sequenza</button></div>
-  <div id="writeGuide" class="card"></div>
-  <div class="label">La tua storia</div>
-  <textarea id="writeText" style="min-height:230px" placeholder="Scrivi qui..."></textarea>
-  <div class="actions"><button onclick="saveWriting()">Salva nel dispositivo</button><button class="secondary" onclick="copyText('writeText')">Copia</button></div>
-</section>
-
-<section id="grammar" class="view">
-  <div class="topbar"><button class="back" onclick="show('home')">← Menu</button></div>
-  <h2>🧩 Grammatica narrativa</h2>
-  <p class="small">Il significato delle emoji non è fisso: dipende dalla posizione nella sequenza e dalle relazioni con gli altri segni.</p>
-  <div class="legend" id="legend"></div>
-</section>
-<footer>Ideogrammi Narrativi · laboratorio locale · nessun testo viene inviato a un server</footer>
+<footer>Ideogrammi Narrativi · tutto resta nel dispositivo</footer>
 </main>
-
 <script>
-const vocab = {
-  "👤":"personaggio","👨":"uomo","👩":"donna","👨🏻":"uomo","👩🏻":"donna","👨🏻‍🦱":"uomo","👩🏻‍🦰":"donna",
-  "👦":"ragazzo","👧":"ragazza","🐕":"cane","🐈":"gatto","🏠":"casa","🏢":"edificio","🚉":"stazione","🏫":"scuola",
-  "🌳":"parco","🌆":"città","🌊":"mare","🚗":"auto","🚌":"autobus","🚂":"treno","✈️":"aereo",
-  "🎒":"zaino","📦":"scatola","🔑":"chiave","📱":"telefono","💌":"lettera","📖":"libro","🎁":"regalo",
-  "🚶":"cammina","🏃":"corre","➡️":"va verso","⬅️":"torna verso","↩️":"torna","👀":"cerca/vede","🔎":"cerca",
-  "🗣️":"parla","📞":"chiama","💭":"pensa","🧠":"ricorda","❤️":"desidera/ama","🤝":"incontra",
-  "🚪":"porta","🔒":"chiuso/impedimento","🔓":"aperto","❌":"non trova/fallisce","❓":"domanda",
-  "⚡":"svolta","💥":"evento improvviso","🔁":"ripete","⏳":"passa il tempo","⏰":"tempo/scadenza",
-  "🌧️":"piove","☀️":"sole","🌙":"notte","🔥":"fuoco","🌬️":"vento","🌊":"acqua/mare",
-  "😢":"piange","😂":"ride","😨":"ha paura","😡":"si arrabbia","🤫":"tace","😴":"dorme",
-  "🍎":"mela","☕":"caffè","🍞":"pane","💰":"denaro","🎈":"festa","🕯️":"candela",
-  "⭐":"segno importante","🌀":"confusione","🎭":"identità/finzione","🪞":"riflessione","🧩":"problema",
-  "➡":"conseguenza/direzione","↔️":"scambio","🔀":"alternativa","➕":"aggiunta","➖":"sottrazione",
-  "📍":"luogo","🕰️":"tempo","🗝️":"chiave","🌧":"pioggia","🏡":"casa"
-};
+const $=id=>document.getElementById(id);
+const norm=s=>s.replace(/[\uFE0F\u{1F3FB}-\u{1F3FF}]/gu,'');
+const esc=s=>s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pk=a=>a[Math.floor(Math.random()*a.length)];
+const RAW=`P|👨🏻|m|l'uomo|un uomo|uomo,padre,signore,marito
+P|👩🏻|f|la donna|una donna|donna,madre,signora,moglie
+P|👦|m|il ragazzo|un ragazzo|ragazzo,bambino,figlio
+P|👧|f|la ragazza|una ragazza|ragazza,bambina,figlia
+P|🧓|m|l'anziano|un anziano|anziano,vecchio,nonno
+P|🐕|m|il cane|un cane|cane$,cagnolino
+P|🐈|m|il gatto|un gatto|gatto
+P|🧔|m|l'altro uomo|un altro uomo|
+P|👵|f|l'altra donna|un'altra donna|
+L|🚉|alla stazione|la stazione|stazion,treno$,binario
+L|🏠|a casa|casa|casa,appartamento
+L|🏫|a scuola|la scuola|scuol,classe$
+L|🌳|al parco|il parco|parco$,giardino,bosco
+L|🌆|in città|la città|citt
+L|🌊|al mare|il mare|mare$,spiaggia,onde$
+L|🏢|in ufficio|l'ufficio|ufficio
+L|🚪|alla porta|la porta|porta$,portone
+L|🏥|in ospedale|l'ospedale|ospedale
+L|🛏️|a letto|il letto|letto$
+L|📍|in un luogo|il luogo|
+V|➡️|m|arriva,giunge,si reca||arriv,raggiun,reca$,giung,entr,va$,vanno$,andò$,andare$
+V|↩️|m|torna,ritorna,rientra|indietro|torn,ritorn,rientr
+V|🚶|w|cammina,passeggia,procede|avanti|cammin,passegg,proced
+V|🏃|w|corre,scappa,fugge|via|corr,scapp,fugg
+V|🔎|t|cerca,ricerca|qualcosa|cerc,ricerc
+V|👀|t|vede,scorge,osserva|qualcosa|ved,vid,scorg,osserv,guard
+V|🤲|t|trova,scopre,raccoglie|qualcosa|trov,scopr,raccogl
+V|🤝|t|incontra,si imbatte in|qualcuno|incontr,imbatt
+V|📞|t|chiama,contatta|qualcuno|chiam,contatt,telefona$,telefonò$
+V|❤️|t|ama,desidera,vuole|qualcuno|ama$,amò$,amava$,amare$,desider,vuole$,voleva$,volle$
+V|🗣️|i|parla,dice,racconta||parl,dice$,disse$,raccont
+V|💭|i|pensa,riflette,ricorda||pens,riflett,ricorda$,ricordò$
+V|😢|i|piange,si dispera||piang,pianse$,dispera
+V|😂|i|ride,sorride||ride$,rise$,risat,sorrid,sorris
+V|😨|i|ha paura,trema||paura,trem,spavent
+V|😴|i|dorme,si addormenta||dorm,addorment
+O|🔑|la chiave|una chiave|chiave,chiavi
+O|📦|la scatola|una scatola|scatol,pacco,pacchett
+O|🎒|lo zaino|uno zaino|zaino
+O|📱|il telefono|un telefono|telefono$,cellulare
+O|💌|la lettera|una lettera|lettera,biglietto,messaggio
+O|📖|il libro|un libro|libro,romanzo
+O|🎁|il regalo|un regalo|regalo
+O|💰|il denaro|del denaro|denaro,soldi
+O|☕|il caffè|un caffè|caffè,caffe$
+O|🍎|la mela|una mela|mela$
+O|🕯️|la candela|una candela|candela
+O|🗺️|la mappa|una mappa|mappa,cartina
+O|🌂|l'ombrello|un ombrello|ombrell
+M|🌧️|Comincia a piovere/La pioggia comincia a cadere/Scende la pioggia|piov,pioggia
+M|☀️|Esce il sole/Il cielo si schiarisce|sole$,sereno,soleggiat
+M|🌙|Si fa notte/Scende la notte/Il buio avvolge la scena|notte$,buio,sera$,tramonto
+M|🌬️|Si alza il vento/Il vento comincia a soffiare|vento$
+M|🔥|Scoppia un incendio/Il fuoco divampa|incendio,fuoco$,fiamme
+M|⛈️|Scoppia un temporale/Il cielo si squarcia in un temporale|temporale,tuono
+M|❄️|Comincia a nevicare/La neve scende fitta|nev
+S|⚡|All'improvviso cambia tutto/Un colpo di scena cambia la direzione/Accade qualcosa che cambia tutto|improvvis,svolt,repent,bruscament,cambia$
+S|💥|Succede qualcosa di imprevisto/Un evento imprevisto irrompe nella scena|imprevist,esplod,esplos,scoppio$,incident
+S|🔒|Ma il passaggio è sbarrato/Ogni via è sbarrata|sbarr,chius,bloccat,imped,lucchett
+S|🔓|La via si libera/Ogni ostacolo cade|sblocc,liber
+S|🔁|Tutto ricomincia da capo/La scena si ripete|ripet,ricominc,daccapo,ancora$
+S|❓|Resta una domanda/Il finale resta incerto|domand,dubbi,mister,perch,incert
+S|⏳|Passa del tempo/Trascorrono le ore|tempo$,ore$,giorni$,anni$,attes,aspett
+S|🔀|Si aprono due strade/Davanti si apre una scelta|oppure$,scelta,bivio,alternativ,strade$
+S|🪞|Si specchia nel proprio riflesso/Riaffiora un vecchio ricordo|riflesso,specchi,passato$,ricordo$
+N|❌|negazione|non$,mai$,nessun,nient,nulla$,senza$`;
+const A=RAW.split('\n').map(l=>{const f=l.split('|'),t=f[0],e={t,e:f[1]};
+ if(t==='P'){e.g=f[2];e.def=f[3];e.ind=f[4];e.st=f[5]}
+ else if(t==='L'){e.at=f[2];e.def=f[3];e.st=f[4]}
+ else if(t==='O'){e.def=f[2];e.ind=f[3];e.st=f[4]}
+ else if(t==='V'){e.k=f[2];e.fm=f[3].split(',');e.nul=f[4];e.st=f[5]}
+ else{e.ph=f[2].split('/');e.st=f[3]}
+ e.st=(e.st||'').split(',').filter(Boolean);e.n=norm(e.e);return e});
+const byN=new Map(A.map(e=>[e.n,e])),K=[...byN.keys()].sort((a,b)=>b.length-a.length);
+const mt=l=>A.find(e=>e.st.some(s=>s.endsWith('$')?l===s.slice(0,-1):l.startsWith(s)));
+const by=t=>A.filter(e=>e.t===t&&e.st.length);
+const lb=e=>e.t==='V'?e.fm[0]:e.t==='M'||e.t==='S'||e.t==='N'?e.ph[0]:e.def;
 
-const functions = [
-["👤","Soggetto","chi agisce o viene seguito dalla storia"],
-["🚶","Azione","movimento o cambiamento"],
-["📍","Luogo","dove avviene qualcosa"],
-["⏳","Tempo","quando o per quanto tempo"],
-["❤️","Desiderio","ciò che il personaggio vuole"],
-["👀","Percezione","cerca, vede, scopre"],
-["🗣️","Comunicazione","dice, chiede, racconta"],
-["❌","Fallimento","qualcosa non accade come previsto"],
-["🔒","Ostacolo","ciò che impedisce l'azione"],
-["❓","Problema","domanda o situazione da risolvere"],
-["⚡","Svolta","cambiamento improvviso della direzione"],
-["💥","Evento","qualcosa irrompe nella storia"],
-["➡️","Conseguenza","un evento produce un altro evento"],
-["↩️","Ritorno","il personaggio torna a un punto precedente"],
-["🔁","Ripetizione","un'azione o situazione ritorna"],
-["🔀","Alternativa","la storia apre due possibilità"],
-["🔑","Oggetto","elemento concreto con funzione narrativa"],
-["🪞","Riflessione","il personaggio guarda a sé o al proprio passato"]
-];
+function tok(line){const s=norm(line),t=[],b=[];let i=0;
+ while(i<s.length){const k=K.find(k=>s.startsWith(k,i));
+  if(k){t.push(byN.get(k));i+=k.length}
+  else{const c=String.fromCodePoint(s.codePointAt(i));if(/\S/.test(c)&&c!=='\u200D'&&!/[\p{L}\p{N}\p{P}]/u.test(c))b.push(c);i+=c.length}}
+ return{t,b}}
 
-const pools = {
-  person:["👨🏻","👩🏻","👦","👧","👤"],
-  place:["🏠","🚉","🏫","🌳","🌆","🌊"],
-  action:["🚶","🏃","➡️","👀","🗣️","📞"],
-  object:["🔑","📦","🎒","📱","💌","📖","🎁"],
-  desire:["❤️","🔎","💭","🧠"],
-  obstacle:["🔒","❌","🌧️","😨","🌀"],
-  turn:["⚡","💥","🔀","↩️"],
-  ending:["🏠","☀️","🌙","🔓","❤️","❓"]
-};
+function enc(text){
+ const nm={},last={},cnt={m:0,f:0},pool={m:['👨🏻','🧔'],f:['👩🏻','👵']},unk=new Set(),lines=[];
+ const men=['luca','andrea','nicola','mattia','elia'];
+ text.split(/[.!?;\n]+|,?\s+(?:ma|però|poi|quando|mentre)\s+/i).forEach(seg=>{
+  if(!seg||!seg.trim())return;
+  const w=seg.split(/[^\p{L}\p{N}]+/u).filter(Boolean),o=[];let neg=false;
+  w.forEach((x,i)=>{
+   const l=x.toLowerCase();
+   if(l==='lui'||l==='egli'){o.push(last.m||'👨🏻');return}
+   if(l==='lei'||l==='ella'){o.push(last.f||'👩🏻');return}
+   const e=mt(l);
+   if(e){
+    if(e.t==='N'){neg=true;return}
+    if(e.t==='V'&&neg){o.push('❌');neg=false}
+    o.push(e.e);if(e.t==='P')last[e.g]=e.e;return}
+   if(/^\p{Lu}/u.test(x)&&x.length>2){
+    if(i>0&&/^(a|in|da|per|di|verso|nel|nella|nello|su|tra|fra)$/.test(w[i-1].toLowerCase())){o.push('📍');return}
+    const n=w[i+1]&&mt(w[i+1].toLowerCase());
+    if(i>0||(n&&n.t==='V')){
+     if(!nm[l]){const g=men.includes(l)||!l.endsWith('a')?'m':'f';nm[l]={e:pool[g][Math.min(cnt[g]++,1)],g,n:x}}
+     o.push(nm[l].e);last[nm[l].g]=nm[l].e;return}}
+   if(l.length>3&&!/^(alla|alle|allo|dalla|nella|della|dello|sono|come|dove|anche|quella|questo|questa|allora)$/.test(l))unk.add(l)});
+  if(neg)o.push('❌');
+  if(o.length)lines.push(o.join(''))});
+ return{text:lines.join('\n'),names:Object.values(nm).map(v=>v.e+' '+v.n),unk:[...unk]}}
 
-function show(id){
- document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
- document.getElementById(id).classList.add('active');
- window.scrollTo(0,0);
-}
+const PL={ha:'hanno',va:'vanno',vuole:'vogliono'};
+const pl=f=>{const a=f.split(' '),j=a.findIndex(x=>x!=='si'&&x!=='non');a[j]=PL[a[j]]||a[j].replace(/a$/,'ano').replace(/e$/,'ono');return a.join(' ')};
 
-function sampleText(){
- document.getElementById('teInput').value="Marco arriva alla stazione e cerca Anna, ma lei non c'è. Comincia a piovere. Marco trova una chiave e torna a casa.";
-}
+function dec(seq,mode){
+ const bad=[],cl=[],lit=[];let c;
+ const nc=()=>c={s:[],neg:0,v:0,o:0,w:0,p:0,x:0};
+ const pu=()=>{if(c.s.length||c.neg||c.v||c.o||c.w||c.p||c.x)cl.push(c);nc()};
+ nc();
+ seq.split('\n').forEach(ln=>{const r=tok(ln);bad.push(...r.b);lit.push(r.t.map(lb).join(' · '));
+  r.t.forEach(t=>{switch(t.t){
+   case'N':if(c.v||c.o||c.p)pu();c.neg=1;break;
+   case'P':if(c.v&&c.v.k==='t'&&!c.o)c.o=t;else if(c.v||(c.p&&c.s.length)){pu();c.s=[t]}else c.s.push(t);break;
+   case'L':if(c.p)pu();c.p=t;break;
+   case'O':if(c.o)c.w=t;else c.o=t;break;
+   case'V':if(c.v)pu();c.v=t;break;
+   default:pu();c.x=t;pu()}});
+  pu()});
+ if(mode==='literal')return{t:lit.join('\n'),b:bad};
+ const seen=new Set(),out=[];let prev=null;
+ const R=p=>{const r=seen.has(p.e)?p.def:p.ind;seen.add(p.e);return r};
+ cl.forEach((c,n)=>{
+  let t;
+  if(c.x)t=pk(c.x.ph);
+  else{
+   let s=null,car=0,fresh=0;
+   if(c.s.length){fresh=c.s.filter(p=>!seen.has(p.e)).length;s=c.s.map(R).join(' e ');prev=c.s}
+   else if(prev){s=prev.map(p=>p.def).join(' e ');car=1}
+   const many=c.s.length>1||(car&&prev.length>1);
+   if(c.v){
+    let f=mode==='literary'?pk(c.v.fm):c.v.fm[0];
+    if(many)f=pl(f);if(c.neg)f='non '+f;
+    const r=[f],k=c.v.k;
+    if(k==='t'){let o=c.o?R(c.o):c.v.nul;if(c.neg&&!c.o)o=o==='qualcosa'?'nulla':o==='qualcuno'?'nessuno':o;r.push(o)}
+    else if(k==='m')r.push(c.p?c.p.at:c.v.nul);
+    else if(k==='w')r.push(c.p?'verso '+c.p.def:c.v.nul);
+    if(c.p&&k!=='m'&&k!=='w')r.push(c.p.at);
+    const w=c.w||(k!=='t'&&c.o);
+    if(w){r.push('con '+(seen.has(w.e)?w.def:w.ind));seen.add(w.e)}
+    t=((car&&mode==='literary')?'':(s||'Qualcuno')+' ')+r.filter(Boolean).join(' ');
+   }
+   else if(c.neg)t=s?s+" non c'è":"Non c'è nulla";
+   else if(c.p)t=s?s+' si trova '+c.p.at:'La scena si svolge '+c.p.at;
+   else if(c.o||c.w){const o=c.o||c.w;t=s?s+' ha '+R(o):"C'è "+R(o)}
+   else t=fresh?'Compare '+s:s+' è presente';
+   if(n>0){
+    if(c.neg)t='Ma '+t.charAt(0).toLowerCase()+t.slice(1);
+    else if(mode==='literary'&&Math.random()<.5)t=pk(['Poi','Intanto','Dopo'])+' '+t.charAt(0).toLowerCase()+t.slice(1)}}
+  out.push(t.charAt(0).toUpperCase()+t.slice(1)+'.')});
+ return{t:out.join(' '),b:bad}}
 
-function tokenizeEmoji(s){
- const known=Object.keys(vocab).sort((a,b)=>b.length-a.length);
- let out=[], i=0;
- while(i<s.length){
-   let found=null;
-   for(const e of known){ if(s.startsWith(e,i)){found=e;break;} }
-   if(found){out.push(found);i+=found.length;}
-   else i++;
- }
- return out;
-}
+function show(id){document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));$(id).classList.add('active');scrollTo(0,0)}
+function smp(){$('tIn').value="Marco arriva alla stazione e cerca Anna, ma lei non c'è. Comincia a piovere. Marco trova una chiave e torna a casa."}
+function te(){const v=$('tIn').value.trim();if(!v){$('tOut').textContent='Inserisci un testo.';return}
+ const r=enc(v);$('tOut').textContent=r.text||'Nessun elemento riconosciuto.';
+ $('tSt').textContent=r.text?dec(r.text,'literal').t:'';
+ $('tNote').textContent=(r.names.length?'Personaggi: '+r.names.join(' · ')+'\n':'')+(r.unk.length?'Senza ideogramma: '+r.unk.join(', '):'')}
+function et(){const r=dec($('eIn').value,$('eMode').value);$('eOut').textContent=r.t||'Nessuna emoji riconosciuta.';
+ $('eNote').textContent=r.b.length?'Non riconosciute: '+r.b.join(' '):''}
+function ins(x){$('eIn').value+=x}
+function del(){const s=Array.from($('eIn').value);while(s.length&&/[\uFE0F\u{1F3FB}-\u{1F3FF}]/u.test(s[s.length-1]))s.pop();s.pop();$('eIn').value=s.join('')}
+function pal(){const p=$('pal');A.forEach(e=>{if(e.e==='📍')return;const b=document.createElement('button');b.className='chip';b.textContent=e.e;b.title=lb(e);b.onclick=()=>ins(e.e);p.appendChild(b)});
+ [['↵',()=>ins('\n')],['⌫',del]].forEach(x=>{const b=document.createElement('button');b.className='chip s';b.textContent=x[0];b.onclick=x[1];p.appendChild(b)})}
 
-function pick(arr){return arr[Math.floor(Math.random()*arr.length)]}
+function gen(){
+ const n=+$('gN').value,P=by('P'),p1=pk(P),p2=pk(P.filter(e=>e!==p1)),l1=pk(by('L')),l2=pk(by('L').filter(e=>e!==l1));
+ const isP=Math.random()<.5,ob=isP?p2:pk(by('O')),tv=pk(isP?['🔎','👀','🤝','📞','❤️']:['🔎','👀','🤲']);
+ const s=[[p1.e,'➡️',l1.e],[tv,ob.e],['❌',ob.e],[pk(by('M')).e],[pk(by('S')).e],['↩️',l2.e]].slice(0,n);
+ $('gSeq').textContent=s.map(x=>x.join('')).join('\n');$('gTr').textContent=''}
+const SK='ideogrammi_saved',ld=()=>{try{return JSON.parse(localStorage.getItem(SK))||[]}catch(e){return[]}};
+function sv(){const t=$('wText').value.trim();if(!t)return;const a=ld();a.unshift({t,q:$('gSeq').textContent,d:new Date().toLocaleDateString('it-IT')});try{localStorage.setItem(SK,JSON.stringify(a))}catch(e){}rs()}
+function rm(i){const a=ld();a.splice(i,1);try{localStorage.setItem(SK,JSON.stringify(a))}catch(e){}rs()}
+function rs(){$('saved').innerHTML=ld().map((x,i)=>`<div class="card" style="margin-top:8px"><div class="lab" style="margin-top:0">${esc(x.d)}</div><div class="em" style="font-size:24px;white-space:pre-wrap">${esc(x.q)}</div><p class="small" style="white-space:pre-wrap;color:#171717;font-size:16px">${esc(x.t)}</p><button class="secondary" onclick="rm(${i})">Elimina</button></div>`).join('')}
 
-function textToEmoji(){
- const t=document.getElementById('teInput').value.trim();
- if(!t){document.getElementById('teOutput').textContent="Inserisci un testo.";return}
- const low=t.toLowerCase();
- let out=[];
- if(/uomo|marco|lui|ragazzo|padre/.test(low)) out.push("👨🏻");
- else if(/donna|anna|lei|ragazza|madre/.test(low)) out.push("👩🏻");
- else out.push("👤");
- if(/stazione|treno/.test(low)) out.push("🚉");
- else if(/casa/.test(low)) out.push("🏠");
- else if(/scuola/.test(low)) out.push("🏫");
- else if(/mare/.test(low)) out.push("🌊");
- if(/cerca|cercare|cercò|cercava/.test(low)) out.push("🔎");
- if(/vede|vide|vedere|guarda/.test(low)) out.push("👀");
- if(/incontra|incontrò|incontrare/.test(low)) out.push("🤝");
- if(/ama|amore|vuole|desidera/.test(low)) out.push("❤️");
- if(/chiama|telefon/.test(low)) out.push("📞");
- if(/parla|dice|disse/.test(low)) out.push("🗣️");
- if(/chiave/.test(low)) out.push("🔑");
- if(/scatola|pacchetto/.test(low)) out.push("📦");
- if(/zaino/.test(low)) out.push("🎒");
- if(/libro/.test(low)) out.push("📖");
- if(/piove|pioggia/.test(low)) out.push("🌧️");
- if(/corre|scappa/.test(low)) out.push("🏃");
- if(/torna|tornò|ritorna/.test(low)) out.push("↩️");
- if(/non c'è|non trova|nessuno|mai|fallisce|manca/.test(low)) out.push("❌");
- if(/chiuso|porta chiusa|imped/.test(low)) out.push("🔒");
- if(/improvvis|all'improvviso|svolta|scopre|scoperto/.test(low)) out.push("⚡");
- if(/notte/.test(low)) out.push("🌙");
- if(/sole|mattina/.test(low)) out.push("☀️");
- if(out.length<3) out.push("➡️");
- document.getElementById('teOutput').textContent=out.join("");
- const labels=out.map(e=>e+" = "+(vocab[e]||"segno narrativo"));
- document.getElementById('teStructure').textContent=labels.join("\n");
-}
+let ch=[];
+function st(){const l=ch[ch.length-1],em=l.k==='Emoji',v=em?dec(l.v,'literary').t:enc(l.v).text;
+ ch.push({k:em?'Testo':'Emoji',v,s:ch.findIndex(x=>x.v===v)})}
+function rc(){$('cSt').innerHTML=ch.map((x,i)=>`<div class="card" style="margin-top:10px"><div class="lab" style="margin-top:0">${i+1} · ${i?x.k:'Testo originale'}${x.s>=0?' · identico al passaggio '+(x.s+1):''}</div><div class="${x.k==='Emoji'?'em':''}" style="white-space:pre-wrap;line-height:1.6">${esc(x.v||'—')}</div></div>`).join('')}
+function chS(){const v=$('cIn').value.trim();if(!v)return;ch=[{k:'Testo',v,s:-1}];st();st();rc()}
+function chN(){if(!ch.length)return;st();st();rc()}
 
-function emojiToText(){
- const raw=document.getElementById('etInput').value.trim();
- const arr=tokenizeEmoji(raw);
- if(!arr.length){document.getElementById('etOutput').textContent="Non riconosco una sequenza di emoji.";return}
- const mode=document.getElementById('etMode').value;
- const has=(e)=>arr.includes(e);
- let subject="Un personaggio";
- if(arr.some(e=>["👨","👨🏻","👨🏻‍🦱"].includes(e)))subject="Un uomo";
- if(arr.some(e=>["👩","👩🏻","👩🏻‍🦰"].includes(e)))subject="Una donna";
- let place=arr.includes("🚉")?"alla stazione":arr.includes("🏠")?"a casa":arr.includes("🏫")?"a scuola":arr.includes("🌊")?"al mare":"in un luogo non precisato";
- let s=[];
- if(mode==="literal"){
-   document.getElementById('etOutput').textContent=arr.map(e=>vocab[e]||e).join(" · ");
-   return;
- }
- s.push(subject+" si trova "+place+".");
- if(has("🔎")||has("👀")) s.push(subject+" cerca qualcosa o qualcuno.");
- if(has("❤️")) s.push("Ha un desiderio che orienta le sue azioni.");
- if(has("🤝")) s.push("A un certo punto incontra qualcuno.");
- if(has("🗣️")) s.push("I due parlano.");
- if(has("📞")) s.push(subject+" prova a comunicare con qualcuno.");
- if(has("🔑")) s.push("Compare una chiave, che assume un'importanza nella vicenda.");
- if(has("📦")) s.push("C'è una scatola da portare, aprire o consegnare.");
- if(has("🎒")) s.push("Con sé ha uno zaino.");
- if(has("❌")) s.push("La ricerca però fallisce: ciò che cerca non si trova.");
- if(has("🔒")) s.push("Un ostacolo blocca il suo tentativo.");
- if(has("🌧️")) s.push("Comincia a piovere.");
- if(has("⚡")||has("💥")) s.push("Un evento improvviso cambia la direzione della storia.");
- if(has("↩️")) s.push(subject+" torna indietro, verso un luogo già attraversato.");
- if(has("🔀")) s.push("A questo punto si apre un'alternativa.");
- if(has("☀️")) s.push("La situazione si chiarisce.");
- if(has("🌙")) s.push("La scena si sposta nella notte.");
- if(has("🔓")) s.push("L'ostacolo viene superato.");
- if(has("❓")) s.push("Rimane una domanda.");
- let out=s.join(" ");
- if(mode==="literary") out=out.replace("Un personaggio","Qualcuno").replace("Un uomo","L'uomo").replace("Una donna","La donna");
- if(document.getElementById('etLength').value==="short") out=s.slice(0,3).join(" ");
- if(document.getElementById('etLength').value==="long") out += " La sequenza non stabilisce tutto: alcuni elementi restano volutamente aperti e possono essere interpretati durante la scrittura.";
- document.getElementById('etOutput').textContent=out;
-}
+function cp(id,b){const el=$(id),t=el.value!==undefined?el.value:el.textContent;
+ const ok=()=>{const o=b.textContent;b.textContent='Copiato';setTimeout(()=>b.textContent=o,1200)};
+ if(navigator.clipboard)navigator.clipboard.writeText(t).then(ok,()=>{});
+ else{const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();document.execCommand('copy');a.remove();ok()}}
 
-function generateSequence(){
- const n=+document.getElementById('genSize').value;
- const arr=[
-  pick(pools.person),pick(pools.place),pick(pools.action),
-  pick(pools.desire),pick(pools.object),pick(pools.obstacle),
-  pick(pools.turn),pick(pools.action),pick(pools.ending),
-  pick(pools.object),pick(pools.obstacle),pick(pools.ending)
- ].slice(0,n);
- document.getElementById('genSequence').textContent=arr.join("");
- document.getElementById('genStory').textContent=decodeForPrompt(arr);
-}
-
-function decodeForPrompt(arr){
- const subject=arr[0]==="👩🏻"?"una donna":arr[0]==="👨🏻"?"un uomo":"un personaggio";
- let lines=[];
- lines.push("Soggetto: "+subject+".");
- lines.push("Luogo: "+(vocab[arr[1]]||"luogo non definito")+".");
- lines.push("Desiderio/azione iniziale: "+(vocab[arr[2]]||"azione")+".");
- lines.push("Motore narrativo: "+(vocab[arr[3]]||"desiderio")+".");
- if(arr[4]) lines.push("Oggetto: "+(vocab[arr[4]]||"oggetto")+".");
- if(arr[5]) lines.push("Ostacolo: "+(vocab[arr[5]]||"ostacolo")+".");
- if(arr[6]) lines.push("Svolta: "+(vocab[arr[6]]||"svolta")+".");
- if(arr[7]) lines.push("Seconda azione: "+(vocab[arr[7]]||"azione")+".");
- if(arr[8]) lines.push("Esito aperto: "+(vocab[arr[8]]||"finale")+".");
- return lines.join(" ");
-}
-function decodeGenerated(){emojiToText()}
-
-let chain=[];
-function chainStart(){
- const t=document.getElementById('chainInput').value.trim();
- if(!t)return;
- chain=[{type:"Testo originale",value:t}];
- const fake=document.getElementById('teInput'); fake.value=t; textToEmoji();
- chain.push({type:"Emoji",value:document.getElementById('teOutput').textContent});
- renderChain();
-}
-function chainNext(){
- if(!chain.length)return;
- const last=chain[chain.length-1];
- if(last.type==="Emoji"){
-   document.getElementById('etInput').value=last.value; emojiToText();
-   chain.push({type:"Nuovo testo",value:document.getElementById('etOutput').textContent});
- }else{
-   document.getElementById('teInput').value=last.value; textToEmoji();
-   chain.push({type:"Nuove emoji",value:document.getElementById('teOutput').textContent});
- }
- renderChain();
-}
-function renderChain(){
- document.getElementById('chainSteps').innerHTML=chain.map((x,i)=>`<div class="card" style="margin-top:10px"><div class="label">Passaggio ${i+1} · ${x.type}</div><div class="${x.type.toLowerCase().includes('emoji')?'emojiResult':'story'}">${escapeHTML(x.value)}</div></div>`).join("");
-}
-function escapeHTML(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-
-function generateWritingPrompt(){
- const arr=[pick(pools.person),pick(pools.place),pick(pools.action),pick(pools.desire),pick(pools.obstacle),pick(pools.turn),pick(pools.object),pick(pools.action),pick(pools.ending)];
- document.getElementById('writeSequence').textContent=arr.join("");
- const guide=arr.map((e,i)=>`<div style="margin:6px 0"><b>${i+1}. ${e}</b> · ${vocab[e]||"segno narrativo"}</div>`).join("");
- document.getElementById('writeGuide').innerHTML=guide;
-}
-function saveWriting(){
- const t=document.getElementById('writeText').value;
- if(!t)return;
- localStorage.setItem("ideogrammi_saved",t);
- alert("Testo salvato nel dispositivo.");
-}
-function copyText(id){
- const el=document.getElementById(id);
- navigator.clipboard?.writeText(el.value!==undefined?el.value:el.textContent).then(()=>alert("Copiato."));
-}
-
-function initLegend(){
- document.getElementById('legend').innerHTML=functions.map(x=>`<div class="card"><div style="font-size:26px">${x[0]}</div><b>${x[1]}</b><div class="small">${x[2]}</div></div>`).join("");
-}
-initLegend();
-generateWritingPrompt();
+function lex(){const T={P:'Personaggi',L:'Luoghi',O:'Oggetti',V:'Azioni',M:'Atmosfera',S:'Svolte e stati',N:'Negazione'};
+ $('lex').innerHTML=Object.keys(T).map(t=>`<div class="lab">${T[t]}</div><div class="chips">${A.filter(e=>e.t===t&&e.e!=='📍').map(e=>`<span class="chip s">${e.e} ${esc(lb(e).replace(/^(l'|il |lo |la |un |una |uno )/,''))}</span>`).join('')}</div>`).join('')}
+pal();lex();rs();gen();
 </script>
 </body>
 </html>
